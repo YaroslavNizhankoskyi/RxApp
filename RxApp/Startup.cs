@@ -15,6 +15,11 @@ using Microsoft.Extensions.Logging;
 using RxApp.Data;
 using RxApp.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace RxApp
 {
@@ -30,6 +35,14 @@ namespace RxApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                    .RequireAuthenticatedUser()
+                                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddXmlSerializerFormatters();
+
             services.AddDistributedMemoryCache();
 
             services.AddControllers();
@@ -43,9 +56,9 @@ namespace RxApp
             {
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 3;
-                options.Password.RequireLowercase = true;
+                options.Password.RequireLowercase = false;
                 options.Password.RequireDigit = false;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
 
@@ -53,7 +66,19 @@ namespace RxApp
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-            
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options => {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                                .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                        };
+                    });
+
+
 
         }
 

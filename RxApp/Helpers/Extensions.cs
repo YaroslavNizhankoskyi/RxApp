@@ -1,4 +1,5 @@
-﻿using RxApp.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using RxApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,12 @@ namespace RxApp.Helpers
 {
     public static class Extensions
     {
-       /* public static bool HasAllergenes(this ICollection<ActiveIngredient> drugingredients, drug) {
+        /* public static bool HasAllergenes(this ICollection<ActiveIngredient> drugingredients, drug) {
 
-            foreach (var i in ingredients) {
-                if (allergenes.Select(s => s.Al)) ;
-            }
+             foreach (var i in ingredients) {
+                 if (allergenes.Select(s => s.Al)) ;
+             }
 
-        }*/
+         }*/
     }
 }

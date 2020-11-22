@@ -22,6 +22,8 @@ namespace RxApp.Helpers
                             p => p.ActiveIngredient.Name)));
 
             CreateMap<DrugCreateDto, Drug>();
+
+            CreateMap<ChangeProfileDto, Customer>();
                 
             
 
