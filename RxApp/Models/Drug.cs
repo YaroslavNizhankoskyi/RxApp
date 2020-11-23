@@ -59,6 +59,9 @@ namespace RxApp.Models
 
         public virtual ICollection<DrugActiveIngredient> DrugActiveIngredients{ get; set; }
 
+        public virtual ICollection<IncompatibleIngredint> IncompatibleDrugs { get; set; }
+
+
 
 
 

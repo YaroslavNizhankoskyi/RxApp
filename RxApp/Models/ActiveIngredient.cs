@@ -14,6 +14,10 @@ namespace RxApp.Models
         public string Name { get; set; }
 
         public virtual ICollection<Allergy> Allergies { get; set; }
+        public virtual ICollection<IncompatibleIngredint> IncompatibleIngredintFirst{ get; set; }
+        public virtual ICollection<IncompatibleIngredint> IncompatibleIngredintSecond{ get; set; }
+
+
 
     }
 }

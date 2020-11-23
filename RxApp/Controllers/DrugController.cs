@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RxApp.Data;
 using RxApp.Models;
@@ -14,7 +15,7 @@ using RxApp.Models.DTO;
 namespace RxApp.Controllers
 {
 
-    
+
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -24,12 +25,17 @@ namespace RxApp.Controllers
 
         private readonly IMapper _mapper;
 
-        public DrugController(IUnitOfWork uow, IMapper mapper)
+        private readonly UserManager<Customer> _userManager;
+
+        public DrugController(IUnitOfWork uow, IMapper mapper, UserManager<Customer> manager)
         {
             _uow = uow;
             _mapper = mapper;
+            _userManager = manager;
 
         }
+
+
 
         [HttpGet("{id}")]
         public ActionResult<DrugInfoDto> Get(int id)
@@ -92,7 +98,7 @@ namespace RxApp.Controllers
         [HttpPut("{id}")]
         public ActionResult Put(int id, DrugUpdateDto model)
         {
-            if (_uow.DrugRepository.Contains(c => c.Id == id ))
+            if (_uow.DrugRepository.Contains(c => c.Id == id))
             {
                 var drug = _uow.DrugRepository.GetById(id);
 
@@ -125,5 +131,55 @@ namespace RxApp.Controllers
             }
             return NoContent();
         }
+
+        [HttpGet("Mark/{id}")]
+        public async Task<IActionResult> MarkAllergicDrugs(string id, ICollection<int> drugIds) {
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return BadRequest("No user with such id");
+            }
+
+            var allergenes = _uow.AllergyRepository.Get(u => u.CustomerId == id);
+
+            if (allergenes.Count() == 0) {
+                return BadRequest("Pacient has no allergies");
+            }
+
+
+            var model = new AllergicDrugsDto
+            {
+                MarkedDrugs = new List<MarkedDrug>()
+            };
+
+            foreach(var i in drugIds)
+            {
+                var markedDrug = new MarkedDrug
+                {
+                    DrugId = i,
+                    HasAllergene = false
+                };
+
+
+                var activeIngredients = _uow.DrugActiveIngredientRepository
+                    .Get(s => s.Id == i)
+                    .Select(c => c.Id);
+
+                foreach (var ing in activeIngredients) {
+                    if (ing == i) {
+                        markedDrug.HasAllergene = true;      
+                    }
+                }
+
+                model.MarkedDrugs.Add(markedDrug);
+
+            }
+
+            return Ok(model);
+        }
+
+
     }
 }

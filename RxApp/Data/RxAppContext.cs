@@ -26,6 +26,8 @@ namespace RxApp.Data
 
         public DbSet<RecipeDrug> RecipeDrugs { get; set; }
 
+        public DbSet<IncompatibleIngredint> IncompatibleDrugs { get; set; }
+
 
 
         public RxAppContext(DbContextOptions<RxAppContext> options)
@@ -39,7 +41,7 @@ namespace RxApp.Data
         {
 
             builder.Entity<Drug>()
-                .HasMany<DrugActiveIngredient>(c => c.DrugActiveIngredients)
+                .HasMany(c => c.DrugActiveIngredients)
                 .WithOne(c => c.Drug)
                 .HasForeignKey(c => c.DrugId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -62,20 +64,25 @@ namespace RxApp.Data
                 .HasForeignKey(c => c.ActiveIngredientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
             builder.Entity<Recipe>()
                 .HasMany(c => c.RecipeDrugs)
                 .WithOne(c => c.Recipe)
                 .HasForeignKey(c => c.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<IncompatibleIngredint>()
+                .HasOne(u => u.ActiveIngredientFirst)
+                .WithMany(u => u.IncompatibleIngredintSecond)
+                .HasForeignKey(u => u.ActiveIngredientFirstId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<IncompatibleIngredint>()
+                .HasOne(u => u.ActiveIngredientSecond)
+                .WithMany(u => u.IncompatibleIngredintFirst)
+                .HasForeignKey(u => u.ActiveIngredintSecondId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
-
-          
-              
-
-
 
         }
     }

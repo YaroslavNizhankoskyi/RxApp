@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RxApp.Data;
 
 namespace RxApp.Migrations
 {
     [DbContext(typeof(RxAppContext))]
-    partial class RxAppContextModelSnapshot : ModelSnapshot
+    [Migration("20201123202421_IncompatibleDrugs")]
+    partial class IncompatibleDrugs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -349,6 +351,9 @@ namespace RxApp.Migrations
                     b.Property<int>("ActiveIngredientFirstId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ActiveIngredientSecondId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ActiveIngredintSecondId")
                         .HasColumnType("int");
 
@@ -359,7 +364,7 @@ namespace RxApp.Migrations
 
                     b.HasIndex("ActiveIngredientFirstId");
 
-                    b.HasIndex("ActiveIngredintSecondId");
+                    b.HasIndex("ActiveIngredientSecondId");
 
                     b.HasIndex("DrugId");
 
@@ -553,16 +558,14 @@ namespace RxApp.Migrations
             modelBuilder.Entity("RxApp.Models.IncompatibleIngredint", b =>
                 {
                     b.HasOne("RxApp.Models.ActiveIngredient", "ActiveIngredientFirst")
-                        .WithMany("IncompatibleIngredintSecond")
+                        .WithMany()
                         .HasForeignKey("ActiveIngredientFirstId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("RxApp.Models.ActiveIngredient", "ActiveIngredientSecond")
-                        .WithMany("IncompatibleIngredintFirst")
-                        .HasForeignKey("ActiveIngredintSecondId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("ActiveIngredientSecondId");
 
                     b.HasOne("RxApp.Models.Drug", null)
                         .WithMany("IncompatibleDrugs")
@@ -610,10 +613,6 @@ namespace RxApp.Migrations
             modelBuilder.Entity("RxApp.Models.ActiveIngredient", b =>
                 {
                     b.Navigation("Allergies");
-
-                    b.Navigation("IncompatibleIngredintFirst");
-
-                    b.Navigation("IncompatibleIngredintSecond");
                 });
 
             modelBuilder.Entity("RxApp.Models.Customer", b =>
