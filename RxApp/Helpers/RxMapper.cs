@@ -24,8 +24,10 @@ namespace RxApp.Helpers
             CreateMap<DrugCreateDto, Drug>();
 
             CreateMap<ChangeProfileDto, Customer>();
-                
-            
+
+            CreateMap<ActiveIngredient, IngredientDto>();
+
+            CreateMap<PharmGroup, PharmGroupDto>();
 
         }
     }

@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using RxApp.Helpers;
+using RxApp.Data;
 
 namespace RxApp.Controllers
 {
@@ -26,14 +27,20 @@ namespace RxApp.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
         private SignInManager<Customer> _signInManager;
+        private readonly IUnitOfWork _uow;
 
 
-        public AccountController(IMapper mapper, UserManager<Customer> userManager, IConfiguration config, SignInManager<Customer> signInManager)
+        public AccountController(IUnitOfWork uow,
+            IMapper mapper, 
+            UserManager<Customer> userManager, 
+            IConfiguration config, 
+            SignInManager<Customer> signInManager)
         {
             _mapper = mapper;
             _userManager = userManager;
             _config = config;
             _signInManager = signInManager;
+            _uow = uow;
         }
 
 
@@ -160,6 +167,74 @@ namespace RxApp.Controllers
 
             return BadRequest("An Error occured during user profile update");
         }
+
+        [HttpPost("Allergenes/{id}")]
+        public async Task<IActionResult> AddPacientAllergenes(string id, IEnumerable<int> inredientIds) {
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return BadRequest("No user with such id");
+            }
+
+            var allergenesToRemove = _uow.AllergyRepository.Get(s => s.CustomerId == id);
+
+            _uow.AllergyRepository.RemoveRange(allergenesToRemove);
+
+            foreach (var i in inredientIds) {
+                var ingredient = _uow.ActiveIngredientRepository.Get(s => s.Id == i).FirstOrDefault();
+
+                if (ingredient == null) {
+                    return BadRequest("No such inredient with id " + ingredient.ToString());
+                }
+
+                var allergy = new Allergy {
+                    ActiveIngredientId = i,
+                    CustomerId = id
+                };
+
+                _uow.AllergyRepository.Add(allergy);
+            }
+
+
+
+            if (_uow.Complete()) {
+                return Ok();
+            }
+
+            return BadRequest("Error during adding allergenes");
+
+            
+        }
+
+        [HttpGet("Allergenes/{id}")]
+        public async Task<ActionResult> PacientAllergenes(string id) {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return BadRequest("No user with such id");
+            }
+
+            var allergenes = _uow.AllergyRepository.Get(s => s.CustomerId == id).FirstOrDefault();
+
+            return Ok(allergenes);
+        }
+
+
+        [HttpGet("profile/{id}")]
+        public async Task<IActionResult> GetUser(string id) {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null) {
+                return BadRequest("No user with such id");
+            }
+
+            return Ok(user);
+        }
+
+
 
     }
 }
