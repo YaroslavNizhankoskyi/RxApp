@@ -29,6 +29,12 @@ namespace RxApp.Helpers
 
             CreateMap<PharmGroup, PharmGroupDto>();
 
+            CreateMap<Recipe, RecipeDto>()
+                .ForMember(dest => dest.Created, src => src.MapFrom(s => s.Time));
+
+            CreateMap<RecipeDrugDto, RecipeDrug>();
+
+                
         }
     }
 }

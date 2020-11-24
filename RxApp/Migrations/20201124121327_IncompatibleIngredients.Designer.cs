@@ -10,8 +10,8 @@ using RxApp.Data;
 namespace RxApp.Migrations
 {
     [DbContext(typeof(RxAppContext))]
-    [Migration("20201123202421_IncompatibleDrugs")]
-    partial class IncompatibleDrugs
+    [Migration("20201124121327_IncompatibleIngredients")]
+    partial class IncompatibleIngredients
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -341,34 +341,32 @@ namespace RxApp.Migrations
                     b.ToTable("DrugActiveIngredients");
                 });
 
-            modelBuilder.Entity("RxApp.Models.IncompatibleIngredint", b =>
+            modelBuilder.Entity("RxApp.Models.IncompatibleIngredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("ActiveIngredientFirstId")
+                    b.Property<int?>("ActiveIngredientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ActiveIngredientSecondId")
+                    b.Property<int?>("ActiveIngredientId1")
                         .HasColumnType("int");
 
-                    b.Property<int>("ActiveIngredintSecondId")
+                    b.Property<int>("FirstIngredientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DrugId")
+                    b.Property<int>("SecondIngredientId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActiveIngredientFirstId");
+                    b.HasIndex("ActiveIngredientId");
 
-                    b.HasIndex("ActiveIngredientSecondId");
+                    b.HasIndex("ActiveIngredientId1");
 
-                    b.HasIndex("DrugId");
-
-                    b.ToTable("IncompatibleDrugs");
+                    b.ToTable("IncompatibleIngredients");
                 });
 
             modelBuilder.Entity("RxApp.Models.PharmGroup", b =>
@@ -555,25 +553,15 @@ namespace RxApp.Migrations
                     b.Navigation("Drug");
                 });
 
-            modelBuilder.Entity("RxApp.Models.IncompatibleIngredint", b =>
+            modelBuilder.Entity("RxApp.Models.IncompatibleIngredient", b =>
                 {
-                    b.HasOne("RxApp.Models.ActiveIngredient", "ActiveIngredientFirst")
-                        .WithMany()
-                        .HasForeignKey("ActiveIngredientFirstId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RxApp.Models.ActiveIngredient", null)
+                        .WithMany("IncompatibleIngredintFirst")
+                        .HasForeignKey("ActiveIngredientId");
 
-                    b.HasOne("RxApp.Models.ActiveIngredient", "ActiveIngredientSecond")
-                        .WithMany()
-                        .HasForeignKey("ActiveIngredientSecondId");
-
-                    b.HasOne("RxApp.Models.Drug", null)
-                        .WithMany("IncompatibleDrugs")
-                        .HasForeignKey("DrugId");
-
-                    b.Navigation("ActiveIngredientFirst");
-
-                    b.Navigation("ActiveIngredientSecond");
+                    b.HasOne("RxApp.Models.ActiveIngredient", null)
+                        .WithMany("IncompatibleIngredintSecond")
+                        .HasForeignKey("ActiveIngredientId1");
                 });
 
             modelBuilder.Entity("RxApp.Models.Recipe", b =>
@@ -613,6 +601,10 @@ namespace RxApp.Migrations
             modelBuilder.Entity("RxApp.Models.ActiveIngredient", b =>
                 {
                     b.Navigation("Allergies");
+
+                    b.Navigation("IncompatibleIngredintFirst");
+
+                    b.Navigation("IncompatibleIngredintSecond");
                 });
 
             modelBuilder.Entity("RxApp.Models.Customer", b =>
@@ -623,8 +615,6 @@ namespace RxApp.Migrations
             modelBuilder.Entity("RxApp.Models.Drug", b =>
                 {
                     b.Navigation("DrugActiveIngredients");
-
-                    b.Navigation("IncompatibleDrugs");
                 });
 
             modelBuilder.Entity("RxApp.Models.PharmGroup", b =>

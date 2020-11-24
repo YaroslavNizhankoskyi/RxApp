@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using RxApp.Models;
 using RxApp.Models.DTO;
 
-namespace RxApp.Data.DrugData
+namespace RxApp.Data._DrugData
 {
     interface IDrugRepository : IRepository<Drug>
     {

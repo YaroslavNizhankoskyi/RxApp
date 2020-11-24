@@ -1,4 +1,5 @@
-﻿using RxApp.Models;
+﻿using RxApp.Data._DrugData;
+using RxApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,12 @@ namespace RxApp.Data
 
         private Repository<PharmGroup> pharmGroupRepo;
         private Repository<ActiveIngredient> activeIngredientRepo;
-        private Repository<Drug> drugRepo;
+        private DrugRepository drugRepo;
         private Repository<Allergy> allergyRepo;
         private Repository<DrugActiveIngredient> drugActiveIngredientRepo;
         private Repository<Recipe> recipeRepo;
         private Repository<RecipeDrug> recipeDrugRepo;
+        private Repository<IncompatibleIngredient> incompatibleIngredintRepo;
 
 
 
@@ -70,13 +72,22 @@ namespace RxApp.Data
             }
         }
 
-        public Repository<Drug> DrugRepository
+        public DrugRepository DrugRepository
         {
             get
             {
-                return drugRepo ?? (drugRepo = new Repository<Drug>(_context));
+                return drugRepo ?? (drugRepo = new DrugRepository(_context));
             }
         }
+
+        public Repository<IncompatibleIngredient> IncompatibleIngredientRepository
+        {
+            get
+            {
+                return incompatibleIngredintRepo ?? (incompatibleIngredintRepo  = new Repository<IncompatibleIngredient>(_context));
+            }
+        }
+
 
         public UnitOfWork(RxAppContext context)
         {

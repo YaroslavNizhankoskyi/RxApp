@@ -31,7 +31,7 @@ namespace RxApp.Models
 
         public bool IsDeletedForMedic { get; set; }
 
-        public bool IsDeletedForPacient { get; set; }
+        public bool IsDeletedForPatient { get; set; }
 
 
 

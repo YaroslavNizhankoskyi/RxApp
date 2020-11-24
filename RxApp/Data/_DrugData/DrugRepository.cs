@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RxApp.Data.DrugData
+namespace RxApp.Data._DrugData
 {
     public class DrugRepository : Repository<Drug>, IDrugRepository
     {

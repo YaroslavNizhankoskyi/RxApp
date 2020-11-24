@@ -114,9 +114,7 @@ namespace RxApp.Controllers
         {
             var ingredientsFromDb = _uow.ActiveIngredientRepository.GetAll();
 
-            var ingredients = _mapper.Map<IEnumerable<IngredientDto>>(ingredientsFromDb); //  LOOK
-
-            return Ok(ingredients);
+            return Ok(ingredientsFromDb);
                 
 
 
@@ -156,13 +154,27 @@ namespace RxApp.Controllers
         }
 
         [HttpDelete("Ingredients/{id}")]
-        public ActionResult DeleteIngredient(int id) {
-            var ingredientFromDb = _uow.ActiveIngredientRepository.Get(s => s.Id == id).FirstOrDefault();
+        public ActionResult DeleteIngredient(int id)
+        {
+            var ingredientFromDb = _uow.ActiveIngredientRepository
+                .Get(s => s.Id == id)
+                .FirstOrDefault();
+
             if (ingredientFromDb != null)
             {
+                var incompatibleFirst = _uow.IncompatibleIngredientRepository
+                    .Get(s => s.FirstIngredientId == id);
+                var incompatibleSecond = _uow.IncompatibleIngredientRepository
+                    .Get(s => s.SecondIngredientId == id);
+
+                var incompatible = incompatibleFirst.Concat(incompatibleSecond);
+
+
+                _uow.IncompatibleIngredientRepository.RemoveRange(incompatible);
+
                 _uow.ActiveIngredientRepository.Remove(ingredientFromDb);
             }
-            
+
             if (_uow.Complete())
             {
                 return Ok();
@@ -283,13 +295,80 @@ namespace RxApp.Controllers
         }
 
 
+        [HttpGet("Incompatible-Ingredient")]
+        public ActionResult GetAllIncompatibleIngredients()
+        {
+            var IncompatibleIngredientFromDb = _uow.IncompatibleIngredientRepository.GetAll();
+
+            return Ok(IncompatibleIngredientFromDb);
+        }
+
+        [HttpPost("Incompatible-Ingredient/{firstId}/{secondId}")]
+        public ActionResult CreateIncompatibleIngredient(int firstId, int secondId)
+        {
+
+            var ingredient1 = _uow.ActiveIngredientRepository
+                .Get(s => s.Id == firstId)
+                .FirstOrDefault();
+
+            var ingredient2 = _uow.ActiveIngredientRepository
+                .Get(s => s.Id == secondId)
+                .FirstOrDefault();
+
+            if (ingredient1 == null || ingredient2 == null) {
+                return BadRequest("No such ingredient");
+            }
+
+            var incompatibelFromDb = _uow.IncompatibleIngredientRepository
+                .Get(s => s.FirstIngredientId == firstId)
+                .Where(s => s.SecondIngredientId == secondId)
+                .FirstOrDefault();
+
+            if (incompatibelFromDb != null) {
+                return BadRequest("Such incompatible Inredient already exist");
+            }
+            var incompatible = new IncompatibleIngredient
+            {
+                FirstIngredientId = firstId,
+                SecondIngredientId = secondId
+            };
+
+            _uow.IncompatibleIngredientRepository.Add(incompatible);
+            
+
+            if (_uow.Complete())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Problem creating IncompatibleIngredient");
+
+        }
+
+        [HttpDelete("Incompatible-Ingredient/{id}")]
+        public ActionResult DeleteIncompatibleIngredient(int id)
+        {
 
 
+            var incompatible = _uow.IncompatibleIngredientRepository
+                .Get(s => s.Id == id)
+                .FirstOrDefault();
 
+            if (incompatible == null)
+            {
+                return BadRequest("No such incompatible ingredients ");
+            }
 
+            _uow.IncompatibleIngredientRepository.Remove(incompatible);
 
+            if (_uow.Complete())
+            {
+                return Ok();
+            }
 
+            return BadRequest("Problem deleting IncompatibleIngredient");
 
+        }
 
     }
 }

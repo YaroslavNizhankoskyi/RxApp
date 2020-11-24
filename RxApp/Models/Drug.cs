@@ -53,17 +53,7 @@ namespace RxApp.Models
 
         public string Pharmacokinetics { get; set; }
 
-       
-
-
-
         public virtual ICollection<DrugActiveIngredient> DrugActiveIngredients{ get; set; }
-
-        public virtual ICollection<IncompatibleIngredint> IncompatibleDrugs { get; set; }
-
-
-
-
 
     }
 }
