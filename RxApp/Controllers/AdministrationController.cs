@@ -14,7 +14,7 @@ using RxApp.Models.DTO;
 
 namespace RxApp.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class AdministrationController : ControllerBase
@@ -45,6 +45,13 @@ namespace RxApp.Controllers
             return Ok(roles);
         }
 
+        [HttpGet("Users")]
+        public IActionResult ListUsers()
+        {
+            var users = _userManager.Users;
+            return Ok(users);
+        }
+
         [HttpGet("Roles/{id}")]
         public async Task<IActionResult> GetUsersInRole(string id) {
 
@@ -66,7 +73,7 @@ namespace RxApp.Controllers
         }
 
         [HttpPost("Roles/{id}")]
-        public async Task<IActionResult> EditUsersInRole(string id, EditUsersInRole model) {
+        public async Task<IActionResult> EditUsersInRole(string id, IEnumerable<UserInRole> model) {
 
             var role = await _roleManager.FindByIdAsync(id);
 
@@ -75,9 +82,8 @@ namespace RxApp.Controllers
                 return BadRequest("No such role");
             }
 
-            var users = model.Users;
 
-            foreach(var user in users)
+            foreach(var user in model)
             {
                 var userFromDb = await _userManager.FindByEmailAsync(user.Email);
 
@@ -369,6 +375,9 @@ namespace RxApp.Controllers
             return BadRequest("Problem deleting IncompatibleIngredient");
 
         }
+
+
+
 
     }
 }

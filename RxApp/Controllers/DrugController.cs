@@ -35,6 +35,16 @@ namespace RxApp.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult GetAll(DrugParams drugParameters) {
+
+            var drugs = _uow.DrugRepository.GetAllFiltered(drugParameters);
+            if(drugs != null)
+            {
+                return Ok(drugs);
+            }
+            return BadRequest("Error occured during getting all drugs");
+        }
 
 
         [HttpGet("{id}")]
@@ -63,6 +73,8 @@ namespace RxApp.Controllers
             return NotFound();
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Create(DrugCreateDto model) {
             var ingredientIds = model.Ingredients;
@@ -70,6 +82,8 @@ namespace RxApp.Controllers
             var createdDrug = _mapper.Map<Drug>(model);
 
             _uow.DrugRepository.Add(createdDrug);
+
+            if (!_uow.Complete()) return BadRequest();
 
             if (ingredientIds != null)
             {
@@ -94,7 +108,7 @@ namespace RxApp.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public ActionResult Put(int id, DrugUpdateDto model)
         {
@@ -116,6 +130,7 @@ namespace RxApp.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
@@ -132,7 +147,8 @@ namespace RxApp.Controllers
             return NoContent();
         }
 
-        [HttpGet("MarkAllergic/{id}")]
+        [Authorize(Roles = "Admin, Pharmacist")]
+        [HttpGet("Allergic/{id}")]
         public async Task<IActionResult> MarkAllergicDrugs(string id, ICollection<int> drugIds) {
 
             var user = await _userManager.FindByIdAsync(id);
@@ -185,8 +201,8 @@ namespace RxApp.Controllers
             return Ok(model);
         }
 
-
-        [HttpGet("MarkIncompatible")]
+        [Authorize(Roles = "Admin, Pharmacist")]
+        [HttpGet("Incompatible")]
         public ActionResult MarkIncompatible(ICollection<int> drugIds) {
 
             if (drugIds.Count() == 0) {
@@ -262,6 +278,20 @@ namespace RxApp.Controllers
             }
 
             return Ok(model);
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("ingredients/{drugId}")]
+        public ActionResult GetDrugIngredients(int drugId) 
+        {
+            var ingredients = _uow.DrugActiveIngredientRepository.Get(s => s.DrugId == drugId);
+
+            if (ingredients.Count() == 0) 
+            {
+                return BadRequest("Error during retreiving drug ingredients");
+            }
+            return Ok(ingredients);
         }
 
         

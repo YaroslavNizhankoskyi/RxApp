@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RxApp.Data;
@@ -13,6 +14,7 @@ using RxApp.Models.DTO;
 
 namespace RxApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RecipeController : ControllerBase
@@ -31,6 +33,7 @@ namespace RxApp.Controllers
 
         }
 
+        [Authorize(Roles = "Medic, Pharmacist, Patient")]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetAll(string id)
         {
@@ -95,7 +98,7 @@ namespace RxApp.Controllers
 
         }
 
-
+        [Authorize(Roles = "Medic")]
         [HttpPost("{medicId}")]
         public async Task<IActionResult> CreateRecipe(string medicId, CreateRecipeDto model)
         {
@@ -126,6 +129,8 @@ namespace RxApp.Controllers
             return BadRequest();
         }
 
+
+        [Authorize(Roles = "Medic")]
         [HttpPost("recipe/{recipeId}")]
         public async Task<IActionResult> CreateRecipeDrug(int recipeId, RecipeDrugDto model)
         {
@@ -144,6 +149,7 @@ namespace RxApp.Controllers
 
         }
 
+        [Authorize(Roles = "Medic")]
         [HttpDelete("recipe/{recipeId}")]
         public ActionResult RemoveRecipeDrug(int recipeId)
         {
@@ -160,6 +166,7 @@ namespace RxApp.Controllers
         }
 
 
+        [Authorize(Roles = "Medic, Patient")]
         [HttpDelete("{userId}/recipe/{recipeId}")]
         public async Task<IActionResult> RemoveRecipe(string userId, int recipeId)
         {
@@ -189,6 +196,7 @@ namespace RxApp.Controllers
 
         }
 
+        [Authorize(Roles = "Medic, Patient, Pharmacist")]
         [HttpGet("recipe/{recipeId}")]
         public async Task<ActionResult> GetAllRecipeDrugs(int recipeId) {
 
@@ -205,6 +213,7 @@ namespace RxApp.Controllers
             
         }
 
+        [Authorize(Roles = "Pharmacist")]
         [HttpPost("{userId}/sell-recipe/{recipeId}")]
         public async Task<IActionResult> SellRecipeDrug(string userId, int recipeDrugId)
         {

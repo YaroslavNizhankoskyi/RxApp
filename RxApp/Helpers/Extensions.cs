@@ -16,5 +16,12 @@ namespace RxApp.Helpers
              }
 
          }*/
+
+/*        public bool IsUserInRole(UserManager<Customer> userManager, string userId, string roleName)
+        {
+            var user = userManager.FindByIdAsync(userId);
+
+            var user
+        }*/
     }
 }

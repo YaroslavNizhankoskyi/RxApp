@@ -60,14 +60,14 @@ namespace RxApp.Controllers
             var result = await _userManager.CreateAsync(customer, model.Password);
 
             if (result.Succeeded) {
-                //var autorize_result = await _userManager.AddToRoleAsync(customer, "Pacient");
+                var autorize_result = await _userManager.AddToRoleAsync(customer, "Patient");
 
-                /*if (!autorize_result.Succeeded)
+                if (!autorize_result.Succeeded)
                 {
 
                     return BadRequest(autorize_result.Errors);
 
-                }*/
+                }
                 return Ok();
             }
             return BadRequest("Аn error occured");
@@ -117,6 +117,7 @@ namespace RxApp.Controllers
             return Unauthorized();
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -168,6 +169,7 @@ namespace RxApp.Controllers
             return BadRequest("An Error occured during user profile update");
         }
 
+        [Authorize(Roles = "Patient")]
         [HttpPost("Allergenes/{id}")]
         public async Task<IActionResult> AddPacientAllergenes(string id, IEnumerable<int> inredientIds) {
 
@@ -207,6 +209,7 @@ namespace RxApp.Controllers
 
             
         }
+
 
         [HttpGet("Allergenes/{id}")]
         public async Task<ActionResult> PacientAllergenes(string id) {

@@ -10,7 +10,7 @@ namespace RxApp.Data._DrugData
     interface IDrugRepository : IRepository<Drug>
     {
 
-
+        IEnumerable<Drug> GetAllFiltered(DrugParams drugParameters);
 
 
 
