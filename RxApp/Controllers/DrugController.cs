@@ -238,7 +238,7 @@ namespace RxApp.Controllers
                     IncompatibleIngredientsOfADrug = drugIncompatibleIngreds
                 };
 
-                drugIngredients.Append(drugIngredientsForMark);
+                drugIngredients.Add(drugIngredientsForMark);
             }
 
             for(int i = 0; i < drugIngredients.Count() - 1; i++) {
@@ -274,7 +274,7 @@ namespace RxApp.Controllers
                     IsMarked = i.IsMarked
                 };
 
-                model.Append(markedDrug);
+                model = model.Append(markedDrug);
             }
 
             return Ok(model);
