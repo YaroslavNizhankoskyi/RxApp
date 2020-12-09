@@ -1,0 +1,22 @@
+<div class="row">
+  <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">{{'RECIPE.EMAIL'| translate}}</th>
+          <th scope="col">{{'RECIPE.CREATED'| translate}}</th>
+          <th scope="col"> 
+            {{'DRUG.OPTIONS'| translate}}
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let recipe of recipes">
+        <tr>
+          <td>{{recipe.email}}</td>
+          <td>{{recipe.dateCreated}}</td>
+          <td>
+            <button class="btn btn-primary" (click)="recipeDetails(recipe.id)">{{'DETAILS'| translate}}</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+</div>

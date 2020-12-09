@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,25 +18,39 @@ export class RegisterComponent implements OnInit {
  @Output() cancelRegister = new EventEmitter<boolean>();
   user = {
     email: "gmail.com",
-    username: "name",
+    firstname: "firstname",
+    secondname: "secondname",
+    age: 18,
     password: "Passw0rd",
-    confirmPassword: "Passw0rd"
   };
 
   registerForm = this.fb.group({
-      password : ['',
+      password : ['',[
         Validators.required,
         Validators.minLength(8),
-        Validators.maxLength(20),
+        Validators.maxLength(20)
+        ]
       ],
-      email: [''],
-      username:  ['',
+      email: ['', Validators.email],
+      firstname:  ['',[
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(20)
+        ]
       ],
-      confirmPassword: ['',
+      secondname:  ['',[
         Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(25),
+        ]
+      ],
+      age: ['', [
+        Validators.min(6),
+        Validators.max(100)
+      ]],
+      confirmPassword: ['',[
+        Validators.required,
+      ]
       ]
     },
     {
@@ -46,16 +61,17 @@ export class RegisterComponent implements OnInit {
     if(this.registerForm.valid){
       this.user = Object.assign({}, this.registerForm.value);
       this.authService.register(this.user).subscribe( () => {
-
+        this.toast.success("Registered");
       });
     }
-    console.log();
   }
 
   constructor(private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
-    private customValidator: CustomValidatorService) { }
+    private customValidator: CustomValidatorService,
+    private toast: ToastrService
+    ) { }
 
   ngOnInit() {
   }

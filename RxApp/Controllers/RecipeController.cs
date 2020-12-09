@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,141 +35,133 @@ namespace RxApp.Controllers
         }
 
         [Authorize(Roles = "Medic, Pharmacist, Patient")]
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetAll(string id)
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetAll(string email)
         {
 
-            var user = await _userManager.FindByIdAsync(id);
-            string slaveId = "";
+            var user = await _userManager.FindByEmailAsync(email);
+            IEnumerable<RecipeDto> model = new List<RecipeDto>();
+
 
             if (user == null)
             {
                 return BadRequest("No such user");
             }
-
 
             IEnumerable<Recipe> recipes = new List<Recipe>();
 
             if (await _userManager.IsInRoleAsync(user, "Patient"))
             {
                 recipes = _uow.RecipeRepository
-                    .Get(s => s.PatientId == id)
-                    .Where(s => s.IsDeletedForPatient == false);
+                    .Get(s => s.PatientId == user.Id);
 
                 if (recipes.Count() == 0)
                 {
                     return BadRequest("No recipes");
                 }
-                slaveId = recipes.FirstOrDefault().MedicId;
 
+                foreach (var i in recipes)
+                {
+                    var slaveEmail = (await _userManager.FindByIdAsync(i.PatientId)).Email;
+                    var dto = new RecipeDto
+                    {
+                        Id = i.Id,
+                        MasterId = user.Id,
+                        SlaveEmail = slaveEmail,
+                        DateCreated = i.DateCreated
+                    };
+
+                    model = model.Append(dto);
+
+                }
             }
             else if (await _userManager.IsInRoleAsync(user, "Medic"))
             {
                 recipes = _uow.RecipeRepository
-                    .Get(s => s.MedicId == id)
-                    .Where(s => s.IsDeletedForMedic == false);
-
+                    .Get(s => s.MedicId == user.Id);
                 if (recipes.Count() == 0)
                 {
                     return BadRequest("No recipes");
                 }
-                slaveId = recipes.FirstOrDefault().PatientId;
 
-            }
-
-
-            IEnumerable<RecipeDto> model = new List<RecipeDto>();
-            foreach (var i in recipes)
-            {
-                var dto = new RecipeDto
+                foreach (var i in recipes)
                 {
-                    Id = i.Id,
-                    MasterId = id,
-                    SlaveId = slaveId,
-                    Created = i.Time,
-                    Start = i.Start,
-                    End = i.End
-                };
-
-                model.Append(dto);
+                    var slaveEmail = (await _userManager.FindByIdAsync(i.PatientId)).Email;
+                    var dto = new RecipeDto
+                    {
+                        Id = i.Id,
+                        MasterId = user.Id,
+                        SlaveEmail = slaveEmail,
+                        DateCreated = i.DateCreated
+                    };
+                    model = model.Append(dto);
+                }
 
             }
-
+            else {
+                return BadRequest("Invalid user data");
+            }
             return Ok(model);
 
         }
 
+
         [Authorize(Roles = "Medic")]
-        [HttpPost("{medicId}")]
-        public async Task<IActionResult> CreateRecipe(string medicId, CreateRecipeDto model)
+        [HttpPost]
+        public async Task<IActionResult> CreateRecipe(CreateRecipeDto model)
         {
 
-            var user = await _userManager.FindByIdAsync(medicId);
+            var medic = await _userManager.FindByIdAsync(model.MedicId);
 
-            if (user == null)
+            if (medic == null)
             {
                 return BadRequest("No such user");
             }
 
-            if (await _userManager.IsInRoleAsync(user, "Medic"))
+            var user = await _userManager.FindByEmailAsync(model.PatientEmail);
+
+            var recipe = new Recipe();
+
+            if (await _userManager.IsInRoleAsync(medic, "Medic"))
             {
 
-                var recipe = new Recipe
+
+                recipe = new Recipe
                 {
-                    End = model.End,
-                    Start = model.Start,
-                    Time = model.Time,
                     MedicId = model.MedicId,
-                    PatientId = model.PatientId
+                    PatientId = user.Id,
+                    IsDeletedForMedic = false,
+                    IsDeletedForPatient = false,
+                    DateCreated = DateTime.Now
                 };
 
                 _uow.RecipeRepository.Add(recipe);
-
+                _uow.Complete();
             }
 
-            return BadRequest();
-        }
 
-
-        [Authorize(Roles = "Medic")]
-        [HttpPost("recipe/{recipeId}")]
-        public async Task<IActionResult> CreateRecipeDrug(int recipeId, RecipeDrugDto model)
-        {
-
-            var recipeDrug = _mapper.Map<RecipeDrug>(model);
-
-            recipeDrug.IsSold = false;
-
-            _uow.RecipeDrugRepository.Add(recipeDrug);
-
-            if (_uow.Complete())
+            foreach (var r in model.RecipeDrugs)
             {
-                return Ok();
+                var recipeDrug = _mapper.Map<RecipeDrug>(r);
+
+                recipeDrug.IsSold = false;
+
+                recipeDrug.RecipeId = recipe.Id;
+
+                _uow.RecipeDrugRepository.Add(recipeDrug);
+
             }
-            return BadRequest("Error occured");
+
+            _uow.Complete();
+            return Ok();
 
         }
 
-        [Authorize(Roles = "Medic")]
-        [HttpDelete("recipe/{recipeId}")]
-        public ActionResult RemoveRecipeDrug(int recipeId)
-        {
-
-            var recipe = _uow.RecipeDrugRepository.Get(s => s.Id == recipeId)
-                .FirstOrDefault();
-            _uow.RecipeDrugRepository.Remove(recipe);
-
-            if (_uow.Complete())
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
 
 
         [Authorize(Roles = "Medic, Patient")]
         [HttpDelete("{userId}/recipe/{recipeId}")]
-        public async Task<IActionResult> RemoveRecipe(string userId, int recipeId)
+        public async Task<IActionResult> HideRecipe(string userId, int recipeId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -197,18 +190,35 @@ namespace RxApp.Controllers
         }
 
         [Authorize(Roles = "Medic, Patient, Pharmacist")]
-        [HttpGet("recipe/{recipeId}")]
+        [HttpGet("drugs/{recipeId}")]
         public async Task<ActionResult> GetAllRecipeDrugs(int recipeId) {
 
             var recipeDrugs = _uow.RecipeDrugRepository.Get(s => s.RecipeId == recipeId);
 
+            ArrayList model = new ArrayList();
+            foreach (var drug in recipeDrugs)
+            {
+                var drugFromDb = _uow.DrugRepository.Find(d => d.Id == drug.DrugId)
+                    .FirstOrDefault();
+
+                var recipe = new RecipeDrugDto
+                {
+                    DrugId = drug.DrugId,
+                    NameEn = drugFromDb.NameEng,
+                    NameUa = drugFromDb.NameRus,
+                    IsSold = drug.IsSold,
+                    PerDay = drug.PerDay,
+                    Comment = drug.Comment,
+                    Dose = drug.Dose
+                };
+                model.Add(recipe);
+
+            }
             if (recipeDrugs.Count() == 0) {
                 return BadRequest("No recipe drugs");
             }
 
-            var model = _mapper.Map<ICollection<RecipeDrugDto>>(recipeDrugs);
-
-            return Ok(model);
+            return Ok(model.ToArray());
             
             
         }

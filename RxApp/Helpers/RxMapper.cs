@@ -15,11 +15,11 @@ namespace RxApp.Helpers
             CreateMap<DrugUpdateDto, Drug>();
 
             CreateMap<Drug, DrugInfoDto>()
-                .ForMember(dest => dest.PharmGroupName, src => src.MapFrom(s => s.PharmGroup.Name))
-                .ForMember(dest => dest.DrugActiveIngredientNames,
+                .ForMember(dest => dest.PharmGroupName, src => src.MapFrom(s => s.PharmGroup.Name));
+               /* .ForMember(dest => dest.DrugActiveIngredientNames,
                     src => src.MapFrom(
                         s => s.DrugActiveIngredients.Select(
-                            p => p.ActiveIngredient.Name)));
+                            p => p.ActiveIngredient.Name))*/
 
             CreateMap<DrugCreateDto, Drug>();
 
@@ -29,10 +29,11 @@ namespace RxApp.Helpers
 
             CreateMap<PharmGroup, PharmGroupDto>();
 
-            CreateMap<Recipe, RecipeDto>()
-                .ForMember(dest => dest.Created, src => src.MapFrom(s => s.Time));
-
+            CreateMap<Recipe, RecipeDto>();
             CreateMap<RecipeDrugDto, RecipeDrug>();
+            CreateMap<Drug, DrugDto>();
+
+            CreateMap<Customer, UserInfoDto>();
 
                 
         }

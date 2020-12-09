@@ -9,18 +9,11 @@ export class CustomValidatorService {
 constructor() { }
 
 passwordMatchValidator(password: string, confirmPassword: string) {
-  return (formGroup: FormGroup) => {
+  return (formGroup: FormGroup) : null => {
     const passwordControl = formGroup.controls[password];
     const confirmPasswordControl = formGroup.controls[confirmPassword];
 
     if (!passwordControl || !confirmPasswordControl) {
-      return null;
-    }
-
-    if (
-      confirmPasswordControl.errors &&
-      !confirmPasswordControl.errors.passwordMismatch
-    ) {
       return null;
     }
 

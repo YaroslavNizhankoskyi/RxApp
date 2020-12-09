@@ -1,31 +1,104 @@
-<nav class="navbar navbar-expand-md navbar-dark  bg-primary">
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
   <div class="container">
-  <a class="navbar-brand" href="#">RxApp</a>
+    <a class="navbar-brand" href="#">RxApp</a>
 
-  <ul *ngIf="loggedIn()" class="navbar-nav mr-auto">
-    
-  </ul>
-  
+    <ul *ngIf="getUserName() !== null" class="navbar-nav mr-auto">
+      <li *ngIf="getUserRole() == 'Admin'" class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLinkActive="true" [routerLink]="['/admin']">{{
+          "NAV.ADMIN" | translate
+        }}</a>
+      </li>
+      <li *ngIf="getUserRole() == 'Admin'" class="nav-item" routerLinkActive="active">
+        <a class="nav-link" routerLinkActive="true" [routerLink]="['/drug']">{{
+          "NAV.DRUG" | translate
+        }}</a>
+      </li>
+      <li
+        *ngIf="getUserRole() == 'Medic'"
+        class="nav-item"
+        routerLinkActive="active"
+      >
+        <a class="nav-link" [routerLink]="['/medic']">{{
+          "NAV.MEDIC" | translate
+        }}</a>
+      </li>
+      <li
+        *ngIf="getUserRole() == 'Pharmacist'"
+        class="nav-item"
+        routerLinkActive="active"
+      >
+        <a
+          class="nav-link"
+          routerLinkActive="true"
+          [routerLink]="['/pharmacist']"
+        >
+          {{ "NAV.PHARMACIST" | translate }}
+        </a>
+      </li>
+    </ul>
+    <p></p>
 
-    <div *ngIf="loggedIn()" class="dropdown" dropdown>
+    <div>
+      <select
+        class="form-control"
+        (change)="changeLang($any($event.target).value)"
+      >
+        <option value="ua" [selected]="lang == 'ua'">
+          {{ "SELECT.LANG.UA" | translate }}
+        </option>
+        <option value="en" [selected]="lang == 'en'">
+          {{ "SELECT.LANG.EN" | translate }}
+        </option>
+      </select>
+    </div>
+    <div *ngIf="getUserName() !== null" class="dropdown" dropdown>
       <a class="text-light dropdown-toggle" dropdownToggle>
-        Welcome {{authService.decodedToken?.unique_name | titlecase}}
+        {{ "NAV.WELCOME" | translate }} {{ getUserName() | titlecase }}
       </a>
-    
+
       <div class="dropdown-menu" *dropdownMenu>
-        <a class="dropdown-item" (click) = "logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a class="dropdown-item" (click)="logout()"
+          ><i class="fa fa-sign-out"></i>{{ "NAV.LOGOUT" | translate }}</a
+        >
       </div>
     </div>
-    
-  
-  <form *ngIf="!loggedIn()"#loginForm = "ngForm" class="form-inline my-2 my-lg-0" (ngSubmit)="login()">
-    <input class="form-control mr-sm-2" type="text" name="username" 
-        placeholder="Username" requiured [(ngModel)]="model.username"/>
+
+    <form
+      *ngIf="getUserName() === null"
+      [formGroup]="loginForm"
+      class="form-inline my-2 my-lg-0"
+      (ngSubmit)="login()"
+    >
+      <div class="form-group mr-sm-2">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="email"
+          required
+          placeholder="{{ 'NAV.EMAIL' | translate }}"
+        />
+      </div>
+      <div class="form-group mr-sm-2">
+        <input
+          type="password"
+          class="form-control"
+          formControlName="password"
+          required
+          placeholder="{{ 'NAV.PASS' | translate }}"
+        />
+      </div>
+
+      <!-- <input class="form-control mr-sm-2" type="text" name="email" 
+        placeholder="email" required [(ngModel)]="model.email"/>
     <input class="form-control mr-sm-2" type="password" name="password" 
-        placeholder="Password" requiured [(ngModel)]="model.password"/>
-    <button [disabled] = "!loginForm.valid" class="btn btn-success my-2 my-sm-0" type="submit">
-      Login
-    </button>
-  </form>
-</div>
+        placeholder="Password" required [(ngModel)]="model.password"/> -->
+      <button
+        [disabled]="!loginForm.valid"
+        class="btn btn-success my-2 my-sm-0"
+        type="submit"
+      >
+        {{ "NAV.LOGIN" | translate }}
+      </button>
+    </form>
+  </div>
 </nav>

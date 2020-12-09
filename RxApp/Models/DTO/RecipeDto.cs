@@ -11,12 +11,9 @@ namespace RxApp.Models.DTO
 
         public string MasterId { get; set; }
 
-        public string SlaveId { get; set; }
+        public string SlaveEmail { get; set; }
 
-        public DateTime Start { get; set; }
+        public DateTime DateCreated { get; set; }
 
-        public DateTime End { get; set; }
-
-        public DateTime Created { get; set; }
     }
 }

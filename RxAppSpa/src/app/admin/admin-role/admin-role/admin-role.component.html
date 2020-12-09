@@ -1,0 +1,60 @@
+<div class="container">
+  <div
+    class="row border-top-1 border-left-1 border-right-1 justify-content-center pt-5 pb-5"
+  >
+    <div class="example-container">
+      <h2>{{ 'ADMIN.ADMIN' | translate}}</h2>
+
+      <div
+        cdkDropList
+        #adminList="cdkDropList"
+        [cdkDropListData]="administrators"
+        [cdkDropListConnectedTo]="[medicList, pharmList]"
+        class="example-list"
+        (cdkDropListDropped)="drop($event)"
+      >
+        <div class="example-box" *ngFor="let item of administrators" cdkDrag>
+          {{ item }}
+        </div>
+      </div>
+    </div>
+
+    <div class="example-container">
+      <h2>{{ 'ADMIN.MEDIC' | translate}}</h2>
+
+      <div
+        cdkDropList
+        #medicList="cdkDropList"
+        [cdkDropListData]="medics"
+        [cdkDropListConnectedTo]="[adminList, pharmList]"
+        class="example-list"
+        (cdkDropListDropped)="drop($event)"
+      >
+        <div class="example-box" *ngFor="let item of medics" cdkDrag>
+          {{ item }}
+        </div>
+      </div>
+    </div>
+
+    <div class="example-container">
+      <h2>{{ 'ADMIN.PHARMACIST' | translate}}</h2>
+
+      <div
+        cdkDropList
+        #pharmList="cdkDropList"
+        [cdkDropListData]="pharmacists"
+        [cdkDropListConnectedTo]="[adminList, medicList]"
+        class="example-list"
+        (cdkDropListDropped)="drop($event)"
+      >
+        <div class="example-box" *ngFor="let item of pharmacists" cdkDrag>
+          {{ item }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row  justify-content-center pt-5 pb-5">
+      <button class="btn btn-lg btn-success" (click)="editUsersInRole()">{{'SUBMIT'| translate}}</button>
+    </div>
+  </div>
+</div>

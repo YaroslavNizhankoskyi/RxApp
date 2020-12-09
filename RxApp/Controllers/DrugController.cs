@@ -8,15 +8,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RxApp.Data;
 using RxApp.Models;
+using RxApp.Helpers;
 using RxApp.Models.DTO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RxApp.Controllers
 {
-
-
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DrugController : ControllerBase
@@ -36,13 +34,37 @@ namespace RxApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAll(DrugParams drugParameters) {
-
-            var drugs = _uow.DrugRepository.GetAllFiltered(drugParameters);
-            if(drugs != null)
+        public async Task<ActionResult<IEnumerable<Drug>>> GetAll([FromQuery] DrugParams drugParams) {
+            
+            var drugs = await _uow.DrugRepository.GetDrugsAsync(drugParams);
+            if (drugs != null)
             {
-                return Ok(drugs);
-            }
+                
+                Response.AddPaginationHeader(drugs.CurrentPage, drugs.PageSize,
+                drugs.TotalCount, drugs.TotalPages);
+                var model = _mapper.Map<IEnumerable<DrugDto>>(drugs);
+                foreach (var d in model)
+                {
+                    if (d.PharmGroupId != null)
+                    {
+                        d.PharmGroup = _uow.PharmGroupRepository
+                            .Find(i => i.Id == d.PharmGroupId)
+                            .FirstOrDefault()
+                            .Name;
+                    }
+                    else {
+                        d.PharmGroupId = 0;
+                        d.PharmGroup = "undefined";
+                    }
+
+                    var ingredients = _uow.DrugActiveIngredientRepository
+                       .Get(u => u.DrugId == d.Id)
+                       .Select(u => u.ActiveIngredientId);
+
+                }
+                return Ok(model);
+            };
+            
             return BadRequest("Error occured during getting all drugs");
         }
 
@@ -62,9 +84,12 @@ namespace RxApp.Controllers
                         drug.PharmGroup = _uow.PharmGroupRepository.GetById(drug.PharmGroupId.Value);
                     }
 
-                    var ingredients = _uow.DrugActiveIngredientRepository.Get(u => u.DrugId == drug.Id);
+                    var ingredients = _uow.DrugActiveIngredientRepository
+                        .Get(u => u.DrugId == drug.Id)
+                        .Select(u => u.ActiveIngredientId);
 
                     var model = _mapper.Map<DrugInfoDto>(drug);
+                    model.Ingredients = ingredients;
 
                     return Ok(model);
                 }
@@ -147,42 +172,29 @@ namespace RxApp.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Admin, Pharmacist")]
-        [HttpGet("Allergic/{id}")]
-        public async Task<IActionResult> MarkAllergicDrugs(string id, ICollection<int> drugIds) {
+        [Authorize(Roles = "Admin, Pharmacist, Medic")]
+        [HttpPost("AllergicDrugs/{email}")]
+        public async Task<IActionResult> MarkAllergicDrugs(string email, ICollection<int> drugIds) {
 
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
                 return BadRequest("No user with such id");
             }
 
-            var allergenes = _uow.AllergyRepository.Get(u => u.CustomerId == id);
+            var allergenes = _uow.AllergyRepository.Get(u => u.CustomerId == user.Id);
 
             if (allergenes.Count() == 0) {
                 return BadRequest("Pacient has no allergies");
             }
 
 
-            var model = new AllergicDrugsDto
-            {
-                MarkedDrugs = new List<MarkedDrug>()
-            };
+            IEnumerable<int> model = new List<int>();
+
 
             foreach(var i in drugIds)
             {
-                var drug = _uow.DrugRepository.Get(s => s.Id == i)
-                    .FirstOrDefault();
-
-                var markedDrug = new MarkedDrug
-                {
-                    DrugId = i,
-                    IsMarked = false,
-                    DrugNameEng = drug.NameEng,
-                    DrugNameRus = drug.NameRus
-                };
-
 
                 var activeIngredients = _uow.DrugActiveIngredientRepository
                     .Get(s => s.Id == i)
@@ -190,20 +202,16 @@ namespace RxApp.Controllers
 
                 foreach (var ing in activeIngredients) {
                     if (ing == i) {
-                        markedDrug.IsMarked = true;      
+                        model = model.Append(i);
+                        break;
                     }
                 }
-
-                model.MarkedDrugs.Add(markedDrug);
-
             }
-
             return Ok(model);
         }
 
-        [Authorize(Roles = "Admin, Pharmacist")]
-        [HttpGet("Incompatible")]
-        public ActionResult MarkIncompatible(ICollection<int> drugIds) {
+        [HttpPost("IncompatibleDrugs")]
+        public IActionResult MarkIncompatible(IEnumerable<int> drugIds) {
 
             if (drugIds.Count() == 0) {
                 return BadRequest("No drugs to mark");
@@ -258,34 +266,35 @@ namespace RxApp.Controllers
                 }
             }
 
-            IEnumerable<MarkedDrug> model = new List<MarkedDrug>();
+            IEnumerable<int> model = new List<int>();
 
-            foreach (var i in drugIngredients) {
-
-                var drug = _uow.DrugRepository
-                    .Get(s => s.Id == i.DrugId)
-                    .FirstOrDefault();
-
-
-                var markedDrug = new MarkedDrug {
-                    DrugNameEng = drug.NameEng,
-                    DrugNameRus = drug.NameRus,
-                    DrugId = drug.Id,
-                    IsMarked = i.IsMarked
-                };
-
-                model = model.Append(markedDrug);
+            foreach (var i in drugIngredients)
+            {
+                if (i.IsMarked)
+                {
+                    model = model.Append(i.DrugId);
+                }
             }
 
             return Ok(model);
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Medic, Pharmacist")]
         [HttpGet("ingredients/{drugId}")]
         public ActionResult GetDrugIngredients(int drugId) 
         {
-            var ingredients = _uow.DrugActiveIngredientRepository.Get(s => s.DrugId == drugId);
+            var drugIngredients = _uow.DrugActiveIngredientRepository.Get(s => s.DrugId == drugId);
+
+            IEnumerable<string> ingredients = new List<string>();
+
+            foreach (var i in drugIngredients) 
+            {
+                var ingredient = _uow.ActiveIngredientRepository.Find(c => c.Id == i.ActiveIngredientId)
+                    .FirstOrDefault();
+
+                ingredients = ingredients.Append(ingredient.Name);
+            }
 
             if (ingredients.Count() == 0) 
             {

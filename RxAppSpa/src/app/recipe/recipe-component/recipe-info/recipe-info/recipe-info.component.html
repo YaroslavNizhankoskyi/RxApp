@@ -1,0 +1,25 @@
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title" id="modal-basic-title">{{ 'DETAILS' | translate}}</h4>
+</div>
+<div class="modal-body">
+  
+      <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+        
+
+        <ngb-panel *ngFor="let drug of recipeDrugs" title="" 
+        >
+          <ng-template ngbPanelContent>
+            <p>{{ 'DRUG.NAMEUA' | translate}} : {{drug.nameUa}}</p>
+            <p>{{ 'DRUG.NAMEEN' | translate}} : {{drug.nameEn}}</p>
+            <p >{{'RECIPE.ISSOLD' | translate}} : {{drug.isSold}}</p>
+            <p>{{'RECIPE.PERDAY' | translate}} : {{drug.perDay}}</p>
+            <p>{{'RECIPE.DOSE' | translate}} : {{drug.dose}}</p>
+            <p>{{'RECIPE.COMMENT' | translate}} : {{drug.comment}}</p>
+          </ng-template>
+        </ngb-panel>
+
+      </ngb-accordion>
+      <div class="modal-footer">
+          <button class="btn btn-primary mr-2" (click)="modal.close('Cancel')">Cancel</button>
+      </div>
+</div>

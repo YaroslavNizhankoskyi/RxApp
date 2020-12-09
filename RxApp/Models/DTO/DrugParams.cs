@@ -1,12 +1,14 @@
-﻿using System;
+﻿using RxApp.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RxApp.Models.DTO
 {
-    public class DrugParams
+    public class DrugParams : PaginationParams
     {
+
         public int PharmGroupId{ get; set; }
 
         public string DrugName { get; set; }

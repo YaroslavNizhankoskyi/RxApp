@@ -195,6 +195,12 @@ namespace RxApp.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AllowedAddingRecipes")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -205,6 +211,9 @@ namespace RxApp.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -228,6 +237,9 @@ namespace RxApp.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("SecondName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -346,12 +358,6 @@ namespace RxApp.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("ActiveIngredientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ActiveIngredientId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("FirstIngredientId")
                         .HasColumnType("int");
 
@@ -359,10 +365,6 @@ namespace RxApp.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActiveIngredientId");
-
-                    b.HasIndex("ActiveIngredientId1");
 
                     b.ToTable("IncompatibleIngredients");
                 });
@@ -389,13 +391,13 @@ namespace RxApp.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<DateTime>("End")
+                    b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeletedForMedic")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeletedForPacient")
+                    b.Property<bool>("IsDeletedForPatient")
                         .HasColumnType("bit");
 
                     b.Property<string>("MedicId")
@@ -403,12 +405,6 @@ namespace RxApp.Migrations
 
                     b.Property<string>("PatientId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -551,17 +547,6 @@ namespace RxApp.Migrations
                     b.Navigation("Drug");
                 });
 
-            modelBuilder.Entity("RxApp.Models.IncompatibleIngredient", b =>
-                {
-                    b.HasOne("RxApp.Models.ActiveIngredient", null)
-                        .WithMany("IncompatibleIngredintFirst")
-                        .HasForeignKey("ActiveIngredientId");
-
-                    b.HasOne("RxApp.Models.ActiveIngredient", null)
-                        .WithMany("IncompatibleIngredintSecond")
-                        .HasForeignKey("ActiveIngredientId1");
-                });
-
             modelBuilder.Entity("RxApp.Models.Recipe", b =>
                 {
                     b.HasOne("RxApp.Models.Customer", "Medic")
@@ -599,10 +584,6 @@ namespace RxApp.Migrations
             modelBuilder.Entity("RxApp.Models.ActiveIngredient", b =>
                 {
                     b.Navigation("Allergies");
-
-                    b.Navigation("IncompatibleIngredintFirst");
-
-                    b.Navigation("IncompatibleIngredintSecond");
                 });
 
             modelBuilder.Entity("RxApp.Models.Customer", b =>

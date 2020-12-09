@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RxApp.Helpers;
 using RxApp.Models;
 using RxApp.Models.DTO;
 using System;
@@ -15,53 +16,43 @@ namespace RxApp.Data._DrugData
                 
         }
 
-        public IEnumerable<Drug> GetAllFiltered(DrugParams drugParameters)
+        public async Task<PagedList<Drug>> GetDrugsAsync(DrugParams drugParameters)
         {
-            IEnumerable<Drug> drugs = dbSet;
+            IEnumerable<Drug> drugs = dbSet.AsEnumerable();
 
-            if (drugParameters.Eng && !string.IsNullOrEmpty(drugParameters.DrugName))
+            if (drugParameters.PharmGroupId > 0)
             {
-                if (drugs.Count() > 0)
-                {
-                    drugs = drugs.Where(b => b.NameEng.ToLower().Contains(drugParameters.DrugName.ToLower()));
-                }
-
-                if (drugParameters.AlphabeticalOrderAsc && drugs.Count() > 0)
-                {
-                    drugs = drugs.OrderBy(s => s.NameEng);
-                }
-                else if (drugs.Count() > 0)
-                {
-                    drugs = drugs.OrderByDescending(s => s.NameEng);
-                }
-            }
-            else if(!string.IsNullOrEmpty(drugParameters.DrugName))
-            {
-
-                if (drugs.Count() > 0)
-                {
-                    drugs = drugs.Where(b => b.NameRus.ToLower().Contains(drugParameters.DrugName.ToLower()));
-                }
-
-
-                if (drugParameters.AlphabeticalOrderAsc && drugs.Count() > 0)
-                {
-                    drugs = drugs.OrderBy(s => s.NameRus);
-
-                }
-                else if (drugs.Count() > 0)
-                {
-                    drugs = drugs.OrderByDescending(s => s.NameRus);
-                }
-
+                drugs = drugs.Where(d => d.PharmGroupId == drugParameters.PharmGroupId);
             }
 
-            if (drugParameters.PharmGroupId != 0 && drugs.Count() > 0)
+            if (!string.IsNullOrEmpty(drugParameters.DrugName))
             {
-                drugs = drugs.Where(s => s.PharmGroupId == drugParameters.PharmGroupId);
+                drugs = drugParameters.Eng switch
+                {
+                    true => drugs.Where(b => b.NameEng.ToLower().Contains(drugParameters.DrugName.ToLower())),
+                    false => drugs.Where(b => b.NameRus.ToLower().Contains(drugParameters.DrugName.ToLower()))
+                };
             }
 
-            return drugs;
+            drugs = drugParameters.Eng switch
+            {
+                true => drugs = drugParameters.AlphabeticalOrderAsc switch
+                {
+                    true => drugs.OrderBy(u => u.NameEng),
+                    false => drugs.OrderByDescending(u => u.NameEng)
+                },
+                false =>
+                drugs = drugParameters.AlphabeticalOrderAsc switch
+                {
+                    true => drugs.OrderBy(u => u.NameRus),
+                    false => drugs.OrderByDescending(u => u.NameRus)
+                }
+            };
+
+
+
+            return await PagedList<Drug>.CreateAsync(drugs,
+                    drugParameters.PageNumber, drugParameters.PageSize);
         }
     }
 }

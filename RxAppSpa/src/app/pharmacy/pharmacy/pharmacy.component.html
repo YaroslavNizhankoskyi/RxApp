@@ -1,3 +1,27 @@
-<p>
-  pharmacy works!
-</p>
+<div class="container">
+  <div
+    class="row border-top-1 border-left-1 border-right-1 justify-content-center pt-5 pb-5"
+  >
+
+      <h2>{{ "ADMIN.PHARMACIST" | translate }}</h2>
+  </div>
+</div>
+
+<div class="container justify-content-center">
+  <div *ngIf="!viewRecipeMode" style="text-align: center">
+    <h1>{{ "RECIPE.VIEW" | translate }}</h1>
+    <div class="text-center">
+      <button class="btn-primary btn-lg btn mr-2" (click)="viewRecipeToggle()">
+        {{ "VIEW" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="viewRecipeMode" class="container">
+    <div class="row justify-content-center">
+      <div>
+        <app-recipe [userEmail]="userEmail"></app-recipe>
+      </div>
+    </div>
+  </div>
+</div>

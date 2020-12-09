@@ -49,10 +49,13 @@ namespace RxApp.Controllers
         {
 
             Customer customer = new Customer {
-                UserName = model.Name,
+                FirstName = model.FirstName,
+                SecondName = model.SecondName,
+                Age = model.Age,
                 Email = model.Email,
+                UserName = model.Email,
+                AllowedAddingRecipes = false
             };
-
 
             if ((await _userManager.FindByEmailAsync(customer.Email) != null))
                 return BadRequest("UserName email exists");
@@ -60,13 +63,28 @@ namespace RxApp.Controllers
             var result = await _userManager.CreateAsync(customer, model.Password);
 
             if (result.Succeeded) {
-                var autorize_result = await _userManager.AddToRoleAsync(customer, "Patient");
+                string domain = customer.Email.Split(new char[] { '@' })[1];
+
+                IdentityResult autorize_result;
+                switch (domain) 
+                {
+                    case "admin.com":
+                        autorize_result = await _userManager.AddToRoleAsync(customer, "Admin");
+                        break;
+                    case "pharmacist.com":
+                        autorize_result = await _userManager.AddToRoleAsync(customer, "Pharmacist");
+                        break;
+                    case "medic.com":
+                        autorize_result = await _userManager.AddToRoleAsync(customer, "Medic");
+                        break;
+                    default:
+                        autorize_result = await _userManager.AddToRoleAsync(customer, "Patient");
+                        break;
+                }
 
                 if (!autorize_result.Succeeded)
                 {
-
                     return BadRequest(autorize_result.Errors);
-
                 }
                 return Ok();
             }
@@ -83,17 +101,21 @@ namespace RxApp.Controllers
                 return NoContent();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, true, false);
+            var userRole = (await _userManager.GetRolesAsync(user))[0];
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
             if (result.Succeeded)
             {
                 var claims = new[] {
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.UserName)
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, userRole)
                 };
 
                 var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+                    Encoding.UTF8.GetBytes(_config.
+                            GetSection("AppSettings:Token").Value));
 
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -108,14 +130,23 @@ namespace RxApp.Controllers
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
 
-                return Ok(new
+                var userInfo = new UserDto
                 {
-                    token = tokenHandler.WriteToken(token)
-                });
+                    FirstName = user.FirstName,
+                    Role = userRole,
+                    Token = tokenHandler.WriteToken(token),
+                    Id = user.Id,
+                    AllowedToAddRecipes = user.AllowedAddingRecipes,
+                    Email = user.Email
+                };
+
+                return Ok(userInfo);
             }
 
             return Unauthorized();
         }
+
+
 
         [Authorize]
         [HttpPost("logout")]
@@ -226,18 +257,51 @@ namespace RxApp.Controllers
         }
 
 
-        [HttpGet("profile/{id}")]
-        public async Task<IActionResult> GetUser(string id) {
-            var user = await _userManager.FindByIdAsync(id);
+        [HttpGet("profile/{email}")]
+        public async Task<IActionResult> GetUser(string email) {
+            var user = await _userManager.FindByEmailAsync(email);
 
-            if (user == null) {
+            if (user == null)
+            {
                 return BadRequest("No user with such id");
             }
 
-            return Ok(user);
+            var model = _mapper.Map<UserInfoDto>(user);
+
+            return Ok(model);
         }
 
+        [Authorize]
+        [HttpPost("AbilityToAddRecipes/{email}/{flag}")]
+        public async Task<IActionResult> ChangeAbilityToAddRecipes(string email, bool flag) 
+        {
+            var user = await _userManager.FindByEmailAsync(email);
 
+            user.AllowedAddingRecipes = flag;
 
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Ok("Changed");
+            }
+
+            return BadRequest("An Error occured during user profile update");
+        }
+
+        [Authorize]
+        [HttpGet("AbilityToAddRecipes/{email}")]
+        public async Task<IActionResult> GetAbilityToAddRecipes(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) 
+            {
+               return BadRequest("An Error occured during user profile update");
+            }
+            return Ok(user.AllowedAddingRecipes);
+
+        }
+
+        
     }
 }

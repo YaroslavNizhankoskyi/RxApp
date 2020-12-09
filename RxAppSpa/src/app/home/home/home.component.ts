@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,9 +10,30 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   registerMode = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, 
+    private router: Router) { }
 
   ngOnInit() {
+  }
+
+  workToggle(){
+    
+    const role = localStorage.getItem('role');
+    console.log(role);
+    switch(role){
+      case "Admin":
+        this.router.navigateByUrl('/admin');
+        break;
+      case "Pharmacist":
+        this.router.navigateByUrl('/pharmacist');
+        break;
+      case "Medic":
+        this.router.navigateByUrl('/medic');
+        break;
+    }
+  }
+  getUserName() : string | null{
+    return localStorage.getItem('username')
   }
 
   registerToggle() {
@@ -19,7 +41,6 @@ export class HomeComponent implements OnInit {
   }
 
   cancelRegisterMode(registerMode: boolean) {
-    console.log(registerMode);
     this.registerMode = registerMode;
   }
 

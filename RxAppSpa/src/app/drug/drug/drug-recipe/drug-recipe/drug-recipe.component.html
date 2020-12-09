@@ -1,0 +1,58 @@
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title" id="modal-basic-title">
+    {{ "USER.SELECT" | translate }}
+  </h4>
+</div>
+<div class="modal-body">
+  <div>
+    <form [formGroup]="recipeDrugForm">
+      <div
+        class="form-group row d-flex justify-content-center align-items-center"
+      >
+        <label for="perDay" class="col-form-label col-sm-2 text-right">{{
+          "RECIPE.PERDAY" | translate
+        }}</label>
+        <div class="col-sm-5">
+          <input formControlName="perDay" type="number" max="100" min="0"  class="form-control" />
+        </div>
+      </div>
+
+      <div
+        class="form-group row d-flex justify-content-center align-items-center"
+      >
+        <label for="dose" class="col-form-label col-sm-2 text-right">{{
+          "RECIPE.DOSE" | translate
+        }}</label>
+        <div class="col-sm-5">
+          <input formControlName="dose" type="text" class="form-control" />
+        </div>
+      </div>
+
+      <div
+        class="form-group row d-flex justify-content-center align-items-center"
+      >
+        <label for="comment" class="col-form-label col-sm-2 text-right">{{
+          "RECIPE.COMMENT" | translate
+        }}</label>
+        <div class="col-sm-5">
+          <input formControlName="comment" type="text"  class="form-control" />
+        </div>
+      </div>
+
+      
+
+      <div class="modal-footer">
+        <button class="btn btn-primary mr-2" (click)="modal.dismiss('Cancel')">
+          {{ "CANCEL" | translate }}
+        </button>
+        <button
+          [disabled]="!recipeDrugForm.valid"
+          class="btn btn-primary mr-2"
+          (click)="assign()"
+        >
+          {{ "USER.SELECTTHAT" | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

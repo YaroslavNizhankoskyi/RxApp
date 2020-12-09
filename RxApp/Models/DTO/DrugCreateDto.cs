@@ -9,7 +9,7 @@ namespace RxApp.Models.DTO
     {
         public int PharmGroupId { get; set; }
 
-        public ICollection<int> Ingredients { get; set; }
+        public IEnumerable<int> Ingredients { get; set; }
 
         public string NameRus { get; set; }
 

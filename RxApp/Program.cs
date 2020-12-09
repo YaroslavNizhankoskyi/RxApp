@@ -29,6 +29,7 @@ namespace RxApp
                     await roleManager.CreateAsync(new IdentityRole { Name = "Pharmacist" });
                 if (!await roleManager.RoleExistsAsync("Medic"))
                     await roleManager.CreateAsync(new IdentityRole { Name = "Medic" });
+                
 
             }
 

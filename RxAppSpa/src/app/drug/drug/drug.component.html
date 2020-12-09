@@ -1,0 +1,94 @@
+<div class="text-center mt-3">
+  <h2>{{'DRUG.TITLE'| translate}} - {{pagination?.totalItems}}</h2>
+</div>
+<div class="container mt-3">
+  <form #form="ngForm" class="form-inline mb-3" (ngSubmit)="loadDrugs()" autocomplete="off">
+      <div class="form-group">
+          <label>{{'DRUG.NAME'| translate}}</label>
+          <input 
+          type="text" 
+          class="form-control ml-1" 
+          style="width: 70px;" 
+          name="name" 
+          [(ngModel)]="drugParams.drugName">
+      </div>
+      <div class="form-check px-2">
+        <input 
+        type="checkbox" 
+        (change)="checkboxEng()">
+        <label class="form-check-label">{{"DRUG.CHECK"| translate}}</label>
+      </div>
+
+      <div class="form-check px-2">
+        <input 
+        type="checkbox" 
+        (change)="checkboxOrder()">
+        <label class="form-check-label">{{"DRUG.ORDER"| translate}}</label>
+      </div>
+
+      <div class="form-group px-2">
+        <label>{{ 'DRUG.PG'| translate}}</label>
+        <select name="PG" style="width: 130px" [(ngModel)]="drugParams.pharmGroupId" class="form-control ml-1">
+            <option *ngFor="let pg of pharmgroups" [value]="pg.id">
+                {{pg.name}}
+            </option>
+        </select>
+    </div>
+     
+      <button class="btn btn-primary ml-1" type="submit">{{'DRUG.APPLYFILTERS'| translate}}</button>
+      <button (click)="resetFilters()" class="btn btn-info ml-1" type="submit">{{'DRUG.RESETFILTERS'| translate}}</button>   
+  </form>
+</div> 
+
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+  <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">{{'DRUG.NAMEEN'| translate}}</th>
+          <th scope="col">{{'DRUG.NAMEUA'| translate}}</th>
+          <th scope="col">{{'DRUG.PG'| translate}}</th>
+          <th scope="col"> 
+            <p>{{'DRUG.OPTIONS'| translate}}</p>
+            <button *ngIf="role=='Admin'" class="btn btn-success" (click)="drugCreate()">{{'ADD'| translate}}</button>
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let drug of drugs">
+        <tr>
+          <th scope="row">{{drug.id}}</th>
+          <td>{{drug.nameEng}}</td>
+          <td>{{drug.nameRus}}</td>
+          <td>{{drug.pharmGroup}}</td>
+          <td *ngIf="role =='Admin'">
+            <button class="btn btn-warning m-2" (click)="drugEdit(drug)">{{'EDIT'| translate}}</button>
+            <button class="btn btn-primary" (click)="drugInfo(drug)">{{'DETAILS'| translate}}</button>
+            <button class="btn btn-danger" (click)="drugRemove(drug.id)">{{'REMOVE'| translate}}</button>
+          </td>
+          <td *ngIf="role =='Medic' || role =='Pharmacist'">
+            <button class="btn btn-primary" (click)="drugInfo(drug)">{{'DETAILS'| translate}}</button>
+            <button class="btn btn-primary" (click)="addDrugToRecipe(drug)">{{'ADD'| translate}}</button>
+          </td>
+          <td *ngIf="role =='Pharmacist'">
+            <button class="btn btn-primary" (click)="drugInfo(drug)">{{'DETAILS'| translate}}</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="d-flex justify-content-center" *ngIf="pagination">
+  <pagination 
+      [boundaryLinks]="true" 
+      [totalItems]="pagination.totalItems"
+      [itemsPerPage]="pagination.itemsPerPage"
+      [(ngModel)]="pagination.currentPage"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;" 
+      nextText="&rsaquo;" 
+      firstText="&laquo;" 
+      lastText="&raquo;">
+</pagination>
+</div>

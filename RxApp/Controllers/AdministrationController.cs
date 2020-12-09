@@ -14,7 +14,7 @@ using RxApp.Models.DTO;
 
 namespace RxApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Pharmacist, Medic")]
     [Route("api/[controller]")]
     [ApiController]
     public class AdministrationController : ControllerBase
@@ -38,6 +38,7 @@ namespace RxApp.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("Roles")]
         public IActionResult ListRoles()
         {
@@ -45,75 +46,55 @@ namespace RxApp.Controllers
             return Ok(roles);
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("Users")]
         public IActionResult ListUsers()
         {
             var users = _userManager.Users;
             return Ok(users);
         }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("Roles/{name}")]
+        public async Task<IActionResult> GetUsersInRole(string name) {
 
-        [HttpGet("Roles/{id}")]
-        public async Task<IActionResult> GetUsersInRole(string id) {
-
-            var role = await _roleManager.FindByIdAsync(id);
+            var role = await _roleManager.FindByNameAsync(name);
 
             if (role == null) {
                 return BadRequest("No such role");
             }
-
-            List<string> emailsOfUsers = new List<string>();
-
-            foreach (var user in _userManager.Users) {
-                if (await _userManager.IsInRoleAsync(user, role.Name)) {
-                    emailsOfUsers.Add(user.Email);
-                }
-            }
+            IEnumerable<string> emailsOfUsers = (await _userManager.GetUsersInRoleAsync(name)).Select(u => u.Email);
 
             return Ok(emailsOfUsers); 
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("Roles/{roleName}")]
+        public async Task<IActionResult> EditUsersInRole(string roleName, IEnumerable<string> model) {
 
-        [HttpPost("Roles/{id}")]
-        public async Task<IActionResult> EditUsersInRole(string id, IEnumerable<UserInRole> model) {
-
-            var role = await _roleManager.FindByIdAsync(id);
+            var role = await _roleManager.FindByNameAsync(roleName);
 
             if (role == null)
             {
                 return BadRequest("No such role");
             }
 
-
-            foreach(var user in model)
+            foreach(var email in model)
             {
-                var userFromDb = await _userManager.FindByEmailAsync(user.Email);
+                var user = await _userManager.FindByEmailAsync(email); 
+                var userRole = (await _userManager.GetRolesAsync(user))[0];
 
-                IdentityResult result = null;
-                if (user.IsSelected && !(await _userManager.IsInRoleAsync(userFromDb, role.Name)))
-                {
-                    result = await _userManager.AddToRoleAsync(userFromDb, role.Name);
+                if (userRole != roleName) {
+                    var result = await _userManager.RemoveFromRoleAsync(user, userRole);
+                    if (!result.Succeeded) 
+                    {
+                        return BadRequest("Error while removeing from role");
+                    }
+                    result = await _userManager.AddToRoleAsync(user, roleName);
                 }
-                else if (!user.IsSelected && await _userManager.IsInRoleAsync(userFromDb, role.Name))
-                {
-                    result = await _userManager.RemoveFromRoleAsync(userFromDb, role.Name);
-                }
-                else
-                {
-                    continue;
-                }
-
-                if (result.Succeeded)
-                {
-                    continue;
-                }
-                else {
-                    return BadRequest(result.Errors);
-                }
-
+                continue;
             }
-
             return Ok();
         }
-
 
         [HttpGet("Ingredients")]
         public ActionResult GetAllIngredients()
@@ -139,7 +120,7 @@ namespace RxApp.Controllers
 
             return Ok(ingredient);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("Ingredients/{model}")]
         public ActionResult CreateIngredient(string model) {
             var ingredientFromDb = _uow.ActiveIngredientRepository.Get(s => s.Name == model)
@@ -158,8 +139,8 @@ namespace RxApp.Controllers
             return BadRequest("Problem creating Ingredient");
 
         }
-
-        [HttpDelete("Ingredients/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("Ingredients/{name}")]
         public ActionResult DeleteIngredient(int id)
         {
             var ingredientFromDb = _uow.ActiveIngredientRepository
@@ -189,15 +170,21 @@ namespace RxApp.Controllers
             return BadRequest("Problem deleting Ingredient");
 
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("Ingredients/{id}/{model}")]
         public ActionResult EditIngredient(int id, string model)
         {
             var ingredientFromDb = _uow.ActiveIngredientRepository.Get(s => s.Id == id).FirstOrDefault();
+
+            var existingIngredient = _uow.ActiveIngredientRepository.Get(s => s.Name == model)
+                .FirstOrDefault();
+            if (existingIngredient != null)
+            {
+                return BadRequest("Such ingredient already exists");
+            }
             if (ingredientFromDb != null)
             {
-                ingredientFromDb.Name = model;
-                
+                ingredientFromDb.Name = model;   
             }
 
             if (_uow.Complete())
@@ -209,20 +196,20 @@ namespace RxApp.Controllers
 
         }
 
-        [HttpGet("PharmGroup")]
+        [HttpGet("PharmGroups")]
         public ActionResult GetAllPharmGroups()
         {
             var PharmGroupFromDb = _uow.PharmGroupRepository.GetAll();
 
-            var PharmGroup = _mapper.Map<IEnumerable<PharmGroupDto>>(PharmGroupFromDb); //  LOOK
-
-            return Ok(PharmGroup);
-
-
-
+            if (PharmGroupFromDb.Count() > 0)
+            {
+                return Ok(PharmGroupFromDb);
+            }
+            return BadRequest("No pharm groups");
         }
 
-        [HttpGet("PharmGroup/{name}")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("PharmGroups/{name}")]
         public ActionResult GetPharmGroup(string name)
         {
             var PharmGroup = _uow.PharmGroupRepository.Get(s => s.Name == name)
@@ -238,7 +225,8 @@ namespace RxApp.Controllers
 
         }
 
-        [HttpPost("PharmGroup/{model}")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("PharmGroups/{model}")]
         public ActionResult CreatePharmGroup(string model)
         {
             var PharmGroupFromDb = _uow.PharmGroupRepository.Get(s => s.Name == model)
@@ -261,7 +249,8 @@ namespace RxApp.Controllers
 
         }
 
-        [HttpDelete("PharmGroup/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("PharmGroups/{id}")]
         public ActionResult DeletePharmGroup(int id)
         {
             var PharmGroupFromDb = _uow.PharmGroupRepository.Get(s => s.Id == id).FirstOrDefault();
@@ -279,10 +268,21 @@ namespace RxApp.Controllers
 
         }
 
-        [HttpPut("PharmGroup/{id}/{model}")]
+        [Authorize(Roles = "Admin")]
+        [HttpPut("PharmGroups/{id}/{model}")]
         public ActionResult EditPharmGroup(int id, string model)
         {
+
+
             var PharmGroupFromDb = _uow.PharmGroupRepository.Get(s => s.Id == id).FirstOrDefault();
+
+            var existingPharmGroup = _uow.PharmGroupRepository.Get(s => s.Name == model)
+                .FirstOrDefault();
+
+            if (existingPharmGroup != null)
+            {
+                return BadRequest("Such pharm group already exists");
+            }
             if (PharmGroupFromDb != null)
             {
                 PharmGroupFromDb.Name = model;
@@ -300,16 +300,39 @@ namespace RxApp.Controllers
 
         }
 
-
-        [HttpGet("Incompatible-Ingredient")]
+        [HttpGet("Incompatible")]
         public ActionResult GetAllIncompatibleIngredients()
         {
             var IncompatibleIngredientFromDb = _uow.IncompatibleIngredientRepository.GetAll();
 
-            return Ok(IncompatibleIngredientFromDb);
+            IEnumerable<IncompatibleDto> model = new List<IncompatibleDto>();
+
+            foreach (var i in IncompatibleIngredientFromDb) {
+                var firstName = _uow.ActiveIngredientRepository
+                    .Find(s => s.Id == i.FirstIngredientId)
+                    .FirstOrDefault()
+                    .Name;
+                var secondName = _uow.ActiveIngredientRepository
+                    .Find(s => s.Id == i.SecondIngredientId)
+                    .FirstOrDefault()
+                    .Name;
+
+                var incompatible = new IncompatibleDto
+                {
+                    NameFirst = firstName,
+                    NameSecond = secondName,
+                    IdFirst = i.FirstIngredientId,
+                    IdSecond = i.SecondIngredientId,
+                    IncompatibleId = i.Id
+                };
+                model = model.Append(incompatible);
+            }
+
+            return Ok(model);
         }
 
-        [HttpPost("Incompatible-Ingredient/{firstId}/{secondId}")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("Incompatible/{firstId}/{secondId}")]
         public ActionResult CreateIncompatibleIngredient(int firstId, int secondId)
         {
 
@@ -351,7 +374,8 @@ namespace RxApp.Controllers
 
         }
 
-        [HttpDelete("Incompatible-Ingredient/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("Incompatible/{id}")]
         public ActionResult DeleteIncompatibleIngredient(int id)
         {
 
@@ -375,9 +399,5 @@ namespace RxApp.Controllers
             return BadRequest("Problem deleting IncompatibleIngredient");
 
         }
-
-
-
-
     }
 }

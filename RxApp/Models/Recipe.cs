@@ -10,9 +10,7 @@ namespace RxApp.Models
     public class Recipe
     {
         [Key]
-        public int Id { get; set; }
-
-       
+        public int Id { get; set; }    
         public string MedicId { get; set; }
 
         public string PatientId { get; set; }
@@ -21,11 +19,7 @@ namespace RxApp.Models
 
         public virtual Customer Patient { get; set; }
 
-        public DateTime Time { get; set; }
-
-        public DateTime Start { get; set; }
-
-        public DateTime End { get; set; }
+        public DateTime DateCreated { get; set; }
 
         public virtual ICollection<RecipeDrug> RecipeDrugs { get; set; }
 

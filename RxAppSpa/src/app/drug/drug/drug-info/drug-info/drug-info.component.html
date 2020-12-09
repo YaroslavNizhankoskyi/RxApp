@@ -1,0 +1,140 @@
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title" id="modal-basic-title">{{ 'DETAILS' | translate}}</h4>
+</div>
+<div class="modal-body">
+  <form>
+    <h2 class="text-center">{{ selectedDrug.nameRus}}</h2>
+      <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+        
+        <ngb-panel title="{{ 'DRUG.NAMEUA' | translate}}" 
+        [disabled]="selectedDrug.nameRus === null">
+          <ng-template ngbPanelContent>
+            {{selectedDrug.nameRus}}
+          </ng-template>
+        </ngb-panel>
+
+        <ngb-panel title="{{ 'DRUG.NAMEEN' | translate}}"
+         [disabled]="selectedDrug.nameEng === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.nameEng}}
+            </ng-template>
+        </ngb-panel>
+
+        <ngb-panel title="{{ 'DRUG.PHARMGROUP' | translate}}"
+         [disabled]="selectedDrug.pharmGroup === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.pharmGroup}}
+            </ng-template>
+        </ngb-panel>
+
+        <ngb-panel title="{{ 'DRUG.INGREDIENTS' | translate }}">
+          <ng-template ngbPanelContent>
+            <select multiple [disabled]="true" class="form-control">
+              <option *ngFor="let ing of ingredients" >
+                {{ ing }}
+              </option>
+            </select>
+          </ng-template>
+        </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.ACTION' | translate}}"
+           [disabled]="selectedDrug.action === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.action}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.DOSING' | translate}}"
+           [disabled]="selectedDrug.dosing === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.dosing}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.OVERDOSE' | translate}}" 
+          [disabled]="selectedDrug.overdose === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.overdose}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.STORAGECONDITION' | translate}}" 
+          [disabled]="selectedDrug.storageCondition === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.storageCondition}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.NOZOLOGY' | translate}}" 
+          [disabled]="selectedDrug.nozology === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.nozology}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.PACKAGING' | translate}}" 
+          [disabled]="selectedDrug.packaging === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.packaging}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.INDICATIONS' | translate}}" 
+          [disabled]="selectedDrug.indications === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.indications}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.BESTBEFORE' | translate}}" 
+          [disabled]="selectedDrug.bestBefore === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.bestBefore}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.SPECIALCASES' | translate}}" 
+          [disabled]="selectedDrug.specialCases === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.specialCases}}
+            </ng-template>
+          </ngb-panel>
+
+
+          <ngb-panel title="{{ 'DRUG.SIDEEFFECTS' | translate}}" 
+          [disabled]="selectedDrug.sideEffects === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.sideEffects}}
+            </ng-template>
+          </ngb-panel>
+
+
+          <ngb-panel title="{{ 'DRUG.DURINGPREGNANCY' | translate}}" 
+          [disabled]="selectedDrug.duringPregnancy  === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.duringPregnancy}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.PHARMACODYNAMICS' | translate}}" 
+          [disabled]="selectedDrug.pharmacodynamics  === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.pharmacodynamics}}
+            </ng-template>
+          </ngb-panel>
+
+          <ngb-panel title="{{ 'DRUG.PHARMACOKINETICS' | translate}}" 
+          [disabled]="selectedDrug.pharmacokinetics === null">
+            <ng-template ngbPanelContent>
+              {{selectedDrug.pharmacokinetics}}
+            </ng-template>
+          </ngb-panel>
+
+
+      </ngb-accordion>
+      <div class="modal-footer">
+          <button class="btn btn-primary mr-2" (click)="modal.close('Cancel')">Cancel</button>
+      </div>
+
+  </form>
+</div>

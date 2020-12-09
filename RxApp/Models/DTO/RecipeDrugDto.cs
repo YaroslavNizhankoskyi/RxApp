@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RxApp.Models.DTO
 {
-    public class RecipeDrugDto
+    public class RecipeDrugDtoS
     {
         public int DrugId { get; set; }
 
@@ -14,9 +14,6 @@ namespace RxApp.Models.DTO
         public int PerDay { get; set; }
 
         public string Dose { get; set; }
-
-        public bool IsSold { get; set; }
-
 
     }
 }

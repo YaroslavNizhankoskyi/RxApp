@@ -1,18 +1,32 @@
-<div class="container mt-5">
+
+<div *ngIf="getUserName() === null" class="container mt-5">
   <div *ngIf="!registerMode" style="text-align:center;">
-    <h1>Find your match</h1>
-    <p class="lead">Come  on in to view your matches</p>
+    <h1>{{ 'HOME.FINDDRUG' | translate}}</h1>
+    <p class="lead">{{ 'HOME.LEAD' | translate}}</p>
     <div class="text-center">
-      <button class="btn-primary btn-lg btn mr-2" (click)="registerToggle()">Register</button>
-      <button class="btn-info btn-lg btn">Learn more</button>
+      <button class="btn-primary btn-lg btn mr-2" (click)="registerToggle()">{{ 'HOME.REGISTER' | translate}}</button>
+      <button class="btn-info btn-lg btn">{{ 'HOME.LEARNMORE' | translate}}</button>
     </div>
   </div>
+
+  
 
   <div *ngIf="registerMode" class="container">
     <div class="row justify-content-center">
         <div class="col-4">
             <app-register (cancelRegister)="cancelRegisterMode($event)" ></app-register>
         </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="getUserName() !== null" style="text-align:center;">
+  <div class="container mt-5">
+    <h1>{{ 'HOME.HELLO' | translate}} {{getUserName()}}</h1>
+    <p class="lead">{{ 'HOME.GETTO' | translate}}</p>
+    <div class="text-center">
+      <button class="btn-primary btn-lg btn mr-2" (click)="workToggle()">{{ 'HOME.GOTO' | translate}}</button>
     </div>
   </div>
 </div>

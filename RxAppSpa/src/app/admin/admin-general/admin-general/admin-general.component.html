@@ -1,0 +1,159 @@
+<div class="container bg-light">
+
+  <div class="row border-top-1 border-left-1 border-right-1 justify-content-center pt-5 pb-5" >
+    <div class="card col-md-3" style="width: 256px">
+      <a href="#">
+        <img src="../../../../assets/administrator.png"
+         class="card-img-top" alt="pharmacist">
+        <div class="card-body">
+          <p class="card-text text-center font-weight-bold">{{ 'ADMIN.ADMIN' | translate}}</p>
+        </div>
+      </a>
+    </div>
+    <div class="card col-md-3" style="width: 256px">
+      <a href="#">
+        <img src="../../../../assets/doctor.png" 
+        class="card-img-top" alt="doctor">
+        <div class="card-body">
+          <p class="card-text text-center font-weight-bold">{{ 'ADMIN.MEDIC' | translate}}</p>
+        </div>
+      </a>
+    </div>
+    <div class="card col-md-3" style="width: 256px">
+      <a href="#">
+        <img src="../../../../assets/pharmacist.png" 
+        class="card-img-top" alt="pharmacist">
+        <div class="card-body">
+          <p class="card-text text-center font-weight-bold">{{ 'ADMIN.PHARMACIST' | translate}}</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 p-3"
+      style="border: 1.5px solid black;">
+      <h2 class="text-center">{{ 'ADMIN.INGREDIENTS' | translate}}</h2>
+      <hr>
+      <form [formGroup]="ingredientForm"> 
+        <div class="input-group form-inline">
+          <div class="form-row">
+            <div class="col-md-5">
+              <select class="form-group mr-3"
+              style="height: 40px"
+              formControlName="id">
+                <option *ngFor="let ing of ingredients" value="{{ing.id}}">{{ing.name}}</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <input type="text"  
+                class="form-control" 
+                formControlName="edit" >
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="form-group col-md-4">
+              <button (click)="editIngredient()" class="btn btn-warning btn-lg">{{ 'EDIT' | translate}}</button>
+            </div>
+
+            <div class="form-group col-md-4">
+              <button (click)="addIngredient()" class="btn btn-success btn-lg">{{ 'ADD' | translate}}</button>
+            </div>
+
+            <div class="form-group col-md-4">
+              <button (click)="removeIngredient()" class="btn btn-danger btn-lg">{{ 'REMOVE' | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </form>     
+      
+    </div>
+    <div class="col-md-4 p-3"
+      style="border: 1.5px solid black;">
+      <h2 class="text-center">{{ 'ADMIN.PG' | translate}}</h2>
+      <hr>
+      <form [formGroup]="PGForm"> 
+        <div class="input-group form-inline">
+          <div class="form-row">
+            <div class="col-md-5">
+              <select class="form-group mr-3"
+              style="height: 40px"
+              formControlName="id">
+                <option *ngFor="let pg of pharmGroups" value="{{pg.id}}">{{pg.name}}</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <input type="text"  
+                class="form-control" 
+                formControlName="edit" >
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="form-group col-md-4">
+              <button (click)="editPG()" class="btn btn-warning btn-lg">{{ 'EDIT' | translate}}</button>
+            </div>
+
+            <div class="form-group col-md-4">
+              <button (click)="addPG()" class="btn btn-success btn-lg">{{ 'ADD' | translate}}</button>
+            </div>
+
+            <div class="form-group col-md-4">
+              <button (click)="removePG()" class="btn btn-danger btn-lg">{{ 'REMOVE' | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </form>     
+      
+    </div>
+    <div class="col-md-4 p-3"
+      style="border: 1.5px solid black;">
+      <h2 class="text-center">{{ 'ADMIN.INCOMPATIBLE' | translate}}</h2>
+      <hr>
+      <form [formGroup]="incompatibleForm"> 
+        <div class="input-group form-inline">
+          <div class="form-row col-md-12">
+            <div class="col-md-6">
+              <select class="form-group mr-3"
+              style="height: 40px; width: 150px"
+              formControlName="firstid">
+                <option *ngFor="let ing of ingredients" value="{{ing.id}}">{{ing.name}}</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <select class="form-group mr-3"
+              style="height: 40px; width: 180px"
+              formControlName="secondid">
+                <option *ngFor="let ing of ingredients" value="{{ing.id}}">{{ing.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row pb-3 pt-3 col-md-12">
+            <select class="col-md-6 offset-md-3 form-group"
+            style="height: 40px; width: 150px"
+            formControlName="incompatibleId">
+              <option *ngFor="let inc of incompatible" value="{{inc.incompatibleId}}">{{inc.nameFirst}} | {{inc.nameSecond}}</option>
+            </select>
+          </div>
+          <div class="row mt-3">
+            <div class="form-group col-md-4">
+              <button (click)="addIncompatible()" class="btn btn-success btn-lg">{{ 'ADD' | translate}}</button>
+            </div>
+
+
+            <div class="form-group col-md-4">
+            </div>
+
+            
+
+            <div class="form-group col-md-4">
+              <button (click)="removeIncompatible()" class="btn btn-danger btn-lg">{{ 'REMOVE' | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </form>     
+      
+    </div>
+  </div>
+
+</div>
+

@@ -9,15 +9,9 @@ namespace RxApp.Models.DTO
     {
         public string MedicId { get; set; }
 
-        public string PatientId { get; set; }
+        public string PatientEmail { get; set; }
 
-        public DateTime Start { get; set; }
-
-        public DateTime Time { get; set; }
-
-        public DateTime End { get; set; }
-
-        public virtual ICollection<int> RecipeDrugsIds { get; set; }
+        public IEnumerable<RecipeDrugDto> RecipeDrugs { get; set; }
 
     }
 }

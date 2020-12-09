@@ -1,0 +1,140 @@
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title" id="modal-basic-title">{{ "ADD" | translate }}</h4>
+</div>
+<div class="modal-body">
+  <form [formGroup]="drug" (ngSubmit)="editDrug()">
+    <ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+      <ngb-panel title="{{ 'DRUG.NAMEUA' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="nameRus" cols="80" rows="1"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.NAMEEN' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="nameEng" cols="80" rows="1"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.PHARMGROUP' | translate }}">
+        <ng-template ngbPanelContent>
+          <select class="form-control" formControlName="pharmGroupId">
+            <option *ngFor="let pg of pharmgroups" value="{{ pg.id }}">
+              {{ pg.name }}
+            </option>
+          </select>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.INGREDIENTS' | translate }}">
+        <ng-template ngbPanelContent>
+          <select multiple class="form-control" formControlName="ingredients">
+            <option *ngFor="let ing of ingredients" [ngValue]="ing.id">
+              {{ ing.name }}
+            </option>
+          </select>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.ACTION' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="action" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.DOSING' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="dosing" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.OVERDOSE' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="overdose" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.STORAGECONDITION' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="storageCondition" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.NOZOLOGY' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="nozology" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.PACKAGING' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="packaging" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.INDICATIONS' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="indications" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.BESTBEFORE' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="bestBefore" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.SPECIALCASES' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea
+            formControlName="specialCases"
+            cols="80"
+            rows="5"
+          ></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.SIDEEFFECTS' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea formControlName="sideEffects" cols="80" rows="5"></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.DURINGPREGNANCY' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea
+            formControlName="duringPregnancy"
+            cols="80"
+            rows="5"
+          ></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.PHARMACODYNAMICS' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea
+            formControlName="pharmacodynamics"
+            cols="80"
+            rows="5"
+          ></textarea>
+        </ng-template>
+      </ngb-panel>
+
+      <ngb-panel title="{{ 'DRUG.PHARMACOKINETICS' | translate }}">
+        <ng-template ngbPanelContent>
+          <textarea
+            formControlName="pharmacokinetics"
+            cols="80"
+            rows="5"
+          ></textarea>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+    <div class="modal-footer">
+      <button class="btn btn-primary mr-2" (click)="modal.close('Cancel')">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-outline-dark">Update</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,60 @@
+<div class="container">
+  <div
+    class="row border-top-1 border-left-1 border-right-1 justify-content-center pt-5 pb-5"
+  >
+    <div class="example-container">
+      <h2>{{ "ADMIN.MEDIC" | translate }}</h2>
+      <app-recipe [userEmail]="medicEmail"></app-recipe>
+    </div>
+  </div>
+</div>
+
+<div class="container justify-content-center">
+  <div *ngIf="!addRecipeMode" style="text-align: center">
+    <h1>{{ "RECIPE.ADD" | translate }}</h1>
+    <div class="text-center">
+      <button class="btn-primary btn-lg btn mr-2" (click)="addRecipeToggle()">
+        {{ "ADD" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="addRecipeMode" class="container">
+    <div class="row justify-content-center">
+          <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">{{'RECIPE.PERDAY'| translate}}</th>
+                  <th scope="col">{{'RECIPE.NAME'| translate}}</th>
+                  <th scope="col">{{'RECIPE.DOSE'| translate}}</th>
+                  <th scope="col"> 
+                    <button class="btn btn-success" (click)="createRecipe()">{{'ADD'| translate}}</button>
+                    <button class="btn btn-success" (click)="markAllIncompatible()">{{'ADMIN.INCOMPATIBLE'| translate}}</button>
+                    <button class="btn btn-success" (click)="markAllAllergic()">{{'RECIPE.ALLERGIC'| translate}}</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody *ngFor="let drug of drugs" >
+                <tr [class.bg-danger]="drug.incompatible">
+                  <th scope="row">{{drug.drugId}}</th>
+                  <td>{{drug.perDay}}</td>
+                  <td>{{drug.name}}</td>
+                  <td>{{drug.dose}}</td>            
+                  <td>
+                    <button class="btn btn-danger" (click)="recipeDrugRemove(drug.id)">{{'REMOVE'| translate}}</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+  </div>
+
+  <div *ngIf="addRecipeMode" class="container">
+    <div class="row justify-content-center">
+      <div>
+        <app-drug (drugSelected)="onAddDrugToRecipe($event)"></app-drug>
+      </div>
+    </div>
+  </div>
+</div>
