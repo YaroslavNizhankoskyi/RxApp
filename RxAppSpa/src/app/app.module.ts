@@ -83,7 +83,6 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   imports: [
     DragDropModule,
-    BrowserAnimationsModule,
     ToastrModule.forRoot(),
     SortableModule.forRoot(),
     CommonModule,
@@ -95,6 +94,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     BsDropdownModule.forRoot(),
     RouterModule.forRoot(appRoutes),
+    BrowserAnimationsModule,
     JwtModule.forRoot({config: {
       tokenGetter: tokenGetter,
       allowedDomains: ['localhost:44360'],

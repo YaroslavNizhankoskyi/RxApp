@@ -1,0 +1,114 @@
+{
+  "ADD": "Add",
+  "REMOVE": "Remove",
+  "EDIT": "Edit",
+  "DETAILS": "Info",
+  "CANCEL": "Cancel",
+  "SUBMIT": "Submit",
+  "VIEW": "View",
+  "SELECT": {
+    "LANG": {
+      "UA": "Ukrainian",
+      "EN": "English"
+    }
+  },
+  "NAV": {
+    "DRUG":"Drugs",
+    "WELCOME": "Welcome ",
+    "LOGIN": "Login",
+    "PASS": "Password",
+    "EMAIL": "Email",
+    "ADMIN": "Admin",
+    "MEDIC": "Medic",
+    "PHARMACIST": "Pharamacist",
+    "LOGOUT": "Log out",
+    "CHANGEPASS": "Change password",
+    "PROFILE": "Profile"
+  },
+  "HOME": {
+    "REGISTER": "Register",
+    "LEARNMORE": "Let's start",
+    "LEAD": "Best app for working in Rx sphere",
+    "FINDDRUG": "Find your work entertaining",
+    "GETTO": "Get to work!",
+    "GOTO": "Go to work",
+    "HELLO": "Hello, dear "
+  },
+  "REGISTER": {
+    "SIGNUP": "Sign up",
+    "REGISTER": "Register",
+    "CANCEL": "Cancel",
+    "ERR": {
+      "FIRSTNAME": "Icorrect firstname",
+      "SECONDNAME": "Incorrect secondname",
+      "AGE": "Некорректний вік користувача",
+      "EMAIL": "Incorrect email",
+      "PASS": "Incorrect password",
+      "CONFIRMPASS": "Passwords don't match",
+      "PASSMIN": "Password needs to be longer than 8 characters",
+      "PASSMAX": "Password needs to be longer than 20 characters"
+    },
+    "FORM": {
+      "FIRSTNAME": "Firstname",
+      "SECONDNAME": "Secondname",
+      "AGE": "Age",
+      "EMAIL": "Email",
+      "PASS": "Password",
+      "CONFIRMPASS": "Confirm Password"
+    }
+  },
+  "ADMIN": {
+    "ADMIN": "Adminitrator",
+    "MEDIC": "Medic",
+    "PHARMACIST": "Pharamacist",
+    "INGREDIENTS": "Ingredient",
+    "PG": "Pharmaceutical groups",
+    "INCOMPATIBLE": "Incompatible"
+  },
+  "DRUG": {
+    "TITLE": "Results found ",
+    "PG": "Group",
+    "CHECK": "English name?",
+    "NAME": "Drug name",
+    "NAMEUA": "Ukrainian name",
+    "NAMEEN": "English name",
+    "PHARMGROUP": "Pharm group",
+    "INGREDIENTS":"Ingredents",
+    "ACTION": "Action",
+    "DOSING": "Dosing",
+    "OVERDOSE": "Overdose",
+    "STORAGECONDITION": "Storage condition",
+    "NOZOLOGY": "Nozology",
+    "PACKAGING": "Packaging",
+    "INDICATIONS": "Indications",
+    "BESTBEFORE": "Best before",
+    "SPECIALCASES": "Specialcases",
+    "SIDEEFFECTS": "Side effects",
+    "DURINGPREGNANCY": "During pregnancy",
+    "PHARMACODYNAMICS": "Pharmacodynamics",
+    "PHARMACOKINETICS": "Pharmacokinetics",
+    "ORDER": "Alphabetical order",
+    "RESETFILTERS": "Reset filter",
+    "APPLYFILTERS": "Filter",
+    "OPTIONS": "Options"
+  },
+  "RECIPE":{
+    "ADD": "Add new recipe",
+    "PERDAY": "Per day",
+    "DOSE":"Dose",
+    "COMMENT": "Comment",
+    "NAME": "Name",
+    "ISSOLD": "Is sold",
+    "CREATED": "Created",
+    "EMAIL": "Email",
+    "ALLERGIC": "Allergic",
+    "RECIPE.VIEW":"View recipes of patients"
+  },
+  "USER":{
+    "SELECT":"Select user for recipe",
+    "EMAIL":"Email",
+    "CHECK":"Check",
+    "SELECTTHAT":"Select",
+    "CREATED":"Created"
+  }
+}

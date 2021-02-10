@@ -103,7 +103,6 @@ export class MedicGeneralComponent implements OnInit {
       d.incompatible = false;
     })
     const selectedIds = this.drugs.map(({ drugId }) => drugId);
-    console.log(selectedIds);
     this.drugService.markIncompatibleDrugs(selectedIds).subscribe(
       res => {
         let obj = res.toString()
@@ -114,21 +113,26 @@ export class MedicGeneralComponent implements OnInit {
           let drug = this.drugs[index];
           drug.incompatible = true;
         })
-        console.log(this.drugs);
-        
+      },
+      err => {
+        this.toast.error(err)
       }
-      
     );
   }
 
-  markAllAllergic()
-  {  
-
+  getDrugIds(){
     this.drugs.forEach(d => {
       d.incompatible = false;
     });
 
     const selectedIds = this.drugs.map(({ drugId }) => drugId);
+    
+  }
+
+  markAllAllergic()
+  {  
+
+    let selectedIds = this.getDrugIds()
     console.log(selectedIds);
     this.drugService.markAllergicDrugs(this.userEmail, selectedIds).subscribe(
       res => {

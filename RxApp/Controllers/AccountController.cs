@@ -101,7 +101,7 @@ namespace RxApp.Controllers
                 return NoContent();
             }
 
-            var userRole = (await _userManager.GetRolesAsync(user))[0];
+            var userRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
@@ -289,14 +289,13 @@ namespace RxApp.Controllers
             return BadRequest("An Error occured during user profile update");
         }
 
-        [Authorize]
         [HttpGet("AbilityToAddRecipes/{email}")]
         public async Task<IActionResult> GetAbilityToAddRecipes(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) 
             {
-               return BadRequest("An Error occured during user profile update");
+               return BadRequest("");
             }
             return Ok(user.AllowedAddingRecipes);
 

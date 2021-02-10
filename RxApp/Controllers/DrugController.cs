@@ -60,7 +60,6 @@ namespace RxApp.Controllers
                     var ingredients = _uow.DrugActiveIngredientRepository
                        .Get(u => u.DrugId == d.Id)
                        .Select(u => u.ActiveIngredientId);
-
                 }
                 return Ok(model);
             };

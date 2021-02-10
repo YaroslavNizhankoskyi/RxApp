@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RxApp.Data;
+using RxApp.Helpers;
 using RxApp.Models;
 using RxApp.Models.DTO;
 
@@ -15,7 +16,6 @@ using RxApp.Models.DTO;
 
 namespace RxApp.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RecipeController : ControllerBase
@@ -224,7 +224,7 @@ namespace RxApp.Controllers
         }
 
         [Authorize(Roles = "Pharmacist")]
-        [HttpPost("{userId}/sell-recipe/{recipeId}")]
+        [HttpPost("{userId}/sell-recipe/{recipeDrugId}")]
         public async Task<IActionResult> SellRecipeDrug(string userId, int recipeDrugId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -236,17 +236,50 @@ namespace RxApp.Controllers
             var recipe = _uow.RecipeDrugRepository.Get(r => r.Id == recipeDrugId)
                 .FirstOrDefault();
 
-            if (await _userManager.IsInRoleAsync(user, "Pharmacist"))
+
+
+            ArduinoData data = new ArduinoData
             {
-                recipe.IsSold = true;
+                DoctorId = userId,
+                DrugId = recipe.DrugId
+            };
+
+            SaveData(data);
+            return Ok();
+
+
+        }
+
+        [HttpGet("Arduino")]
+        public IActionResult GetArduinoData() {
+            var data = GetCart();
+
+            if (data.DoctorId != null) 
+            {
+                return Ok(data);
             }
 
-            if (_uow.Complete())
-            {
-                return Ok();
-            }
-            return BadRequest("Error occured while deleting recipe");
+            return BadRequest();
 
+        }
+
+        private ArduinoData GetCart()
+        {
+            ArduinoData data = HttpContext.Session.GetJson<ArduinoData>("ArduinoData") ?? new ArduinoData();
+            return data;
+        }
+
+        private void SaveData(ArduinoData data)
+        {
+            HttpContext.Session.SetJson("ArduinoData", data);
+        }
+
+        [HttpGet("Test")]
+        public IActionResult Test() 
+        {
+
+            var hello = "Henlo";
+            return Ok(hello);
         }
     }
 

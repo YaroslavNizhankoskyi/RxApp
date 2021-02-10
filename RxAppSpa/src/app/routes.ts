@@ -29,5 +29,5 @@ export const appRoutes: Routes = [
             canActivate: [PharmacistGuard]},
           {path: 'drug', component: DrugComponent}
         ]
-      },
+      }
 ];

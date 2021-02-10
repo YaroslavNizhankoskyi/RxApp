@@ -26,7 +26,7 @@ export class RecipeComponent implements OnInit {
         this.recipes = res;
       }, 
       err => {
-        this.toast.error("No recipes");
+        //this.toast.error("No recipes");
       }
     )
   }
@@ -41,7 +41,7 @@ export class RecipeComponent implements OnInit {
         this.recipeDrugs = res;
       }, 
       err => {
-        this.toast.error("No recipe drugs");
+        //this.toast.error("No recipe drugs");
       }
     )
 
