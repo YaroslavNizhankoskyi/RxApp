@@ -28,18 +28,21 @@ namespace RxApp.Controllers
         private readonly IConfiguration _config;
         private SignInManager<Customer> _signInManager;
         private readonly IUnitOfWork _uow;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
 
         public AccountController(IUnitOfWork uow,
             IMapper mapper, 
             UserManager<Customer> userManager, 
             IConfiguration config, 
-            SignInManager<Customer> signInManager)
+            SignInManager<Customer> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _mapper = mapper;
             _userManager = userManager;
             _config = config;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _uow = uow;
         }
 
@@ -48,7 +51,7 @@ namespace RxApp.Controllers
         public async Task<IActionResult> Register(RegisterDto model)
         {
 
-            Customer customer = new Customer {
+            Customer user = new Customer {
                 FirstName = model.FirstName,
                 SecondName = model.SecondName,
                 Age = model.Age,
@@ -57,31 +60,21 @@ namespace RxApp.Controllers
                 AllowedAddingRecipes = false
             };
 
-            if ((await _userManager.FindByEmailAsync(customer.Email) != null))
+            if ((await _userManager.FindByEmailAsync(user.Email) != null))
                 return BadRequest("UserName email exists");
 
-            var result = await _userManager.CreateAsync(customer, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded) {
-                string domain = customer.Email.Split(new char[] { '@' })[1];
-
-                IdentityResult autorize_result;
-                switch (domain) 
+            if (result.Succeeded) 
+            {
+                if (!(await _roleManager.RoleExistsAsync(model.Role))) 
                 {
-                    case "admin.com":
-                        autorize_result = await _userManager.AddToRoleAsync(customer, "Admin");
-                        break;
-                    case "pharmacist.com":
-                        autorize_result = await _userManager.AddToRoleAsync(customer, "Pharmacist");
-                        break;
-                    case "medic.com":
-                        autorize_result = await _userManager.AddToRoleAsync(customer, "Medic");
-                        break;
-                    default:
-                        autorize_result = await _userManager.AddToRoleAsync(customer, "Patient");
-                        break;
+                    _userManager.DeleteAsync(user);
+                    return BadRequest("No such role");
                 }
 
+                IdentityResult autorize_result = await _userManager.AddToRoleAsync(user, model.Role);
+                
                 if (!autorize_result.Succeeded)
                 {
                     return BadRequest(autorize_result.Errors);

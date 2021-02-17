@@ -54,7 +54,12 @@
       "AGE": "Age",
       "EMAIL": "Email",
       "PASS": "Password",
-      "CONFIRMPASS": "Confirm Password"
+      "CONFIRMPASS": "Confirm Password",
+      "ROLE": "Role",
+      "ADMIN": "Admin",
+      "PHARMACIST":"Pharamacist",
+      "MEDIC":"Medic",
+      "PATIENT":"Patient"
     }
   },
   "ADMIN": {

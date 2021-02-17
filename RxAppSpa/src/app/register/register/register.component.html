@@ -1,93 +1,179 @@
 <form [formGroup]="registerForm" (ngSubmit)="register()">
-  <h2 class="text-center text-primary">{{ 'REGISTER.SIGNUP' | translate}}</h2>
-  <hr>
-
+  <h2 class="text-center text-primary">{{ "REGISTER.SIGNUP" | translate }}</h2>
+  <hr />
 
   <div class="form-group">
     <input
-      type="text"  
-      class="form-control" 
-      formControlName="firstname" 
-      placeholder="{{ 'REGISTER.FORM.FIRSTNAME' | translate}}">
-    <div class="alert alert-danger"
-      *ngIf="registerForm.controls['firstname'].invalid && registerForm.controls['firstname'].touched">
-         {{ 'REGISTER.ERR.FIRSTNAME' | translate}}
-    </div>
+      type="text"
+      class="form-control"
+      formControlName="firstname"
+      placeholder="{{ 'REGISTER.FORM.FIRSTNAME' | translate }}"
+    />
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['firstname'].invalid &&
+        registerForm.controls['firstname'].touched
+      "
+    >
+               {{ "REGISTER.ERR.FIRSTNAME" | translate }}     
+    </div>
   </div>
   <div class="form-group">
     <input
-      type="text"  
-      class="form-control" 
-      formControlName="secondname" 
-      placeholder="{{ 'REGISTER.FORM.SECONDNAME' | translate}}">
-    <div class="alert alert-danger"
-      *ngIf="registerForm.controls['secondname'].invalid && registerForm.controls['secondname'].touched">
-      {{ 'REGISTER.ERR.SECONDNAME' | translate}}    </div>
+      type="text"
+      class="form-control"
+      formControlName="secondname"
+      placeholder="{{ 'REGISTER.FORM.SECONDNAME' | translate }}"
+    />
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['secondname'].invalid &&
+        registerForm.controls['secondname'].touched
+      "
+    >
+      {{ "REGISTER.ERR.SECONDNAME" | translate }}    
+    </div>
   </div>
 
   <div class="form-group form-inline">
-    <label for="example-number-input" 
-    class="col-2 col-form-label">{{ 'REGISTER.FORM.AGE' | translate}}</label>
+    <label for="example-number-input" class="col-2 col-form-label">{{
+      "REGISTER.FORM.AGE" | translate
+    }}</label>
     <div class="col-8">
-      <input 
-      class="form-control"
-      min="6"
-      max="100"
-       type="number" 
-       value="18"
-       type="number"
-       formControlName="age" 
-       id="example-number-input">
+      <input
+        class="form-control"
+        min="6"
+        max="100"
+        type="number"
+        value="18"
+        type="number"
+        formControlName="age"
+        id="example-number-input"
+      />
     </div>
   </div>
-  <div class="form-group">
-    <input 
-      type="text" 
+
+  <div class="form-group form-inline">
+    <label for="roleSelect" class="col-2 col-form-label">{{
+      'REGISTER.FORM.ROLE' | translate
+    }}
+    </label>
+
+      <select 
       class="form-control"
-      placeholder="{{ 'REGISTER.FORM.EMAIL' | translate}}" 
-      formControlName="email">
-      <div class="alert alert-danger"
-            *ngIf="registerForm.controls['email'].invalid && registerForm.controls['email'].touched">
-               {{ 'REGISTER.ERR.EMAIL' | translate}}
-       </div>  
-  </div>
-
-  <div class="form-group">
-    <input 
-      type="password" 
-      class="form-control" 
-      formControlName="password" 
-      placeholder="{{ 'REGISTER.FORM.PASS' | translate}}">
-      <div class="alert alert-danger"
-            *ngIf="registerForm.controls['password'].invalid && registerForm.controls['password'].touched">
-      {{ 'REGISTER.ERR.PASS' | translate}}
-       </div>
-      <div class="alert alert-danger"
-            *ngIf="registerForm.controls['password'].hasError('minlength') && registerForm.controls['password'].touched">
-      {{ 'REGISTER.ERR.PASSMIN' | translate}} 
-       </div>
-      <div class="alert alert-danger"
-            *ngIf="registerForm.controls['password'].hasError('maxlength') && registerForm.controls['password'].touched">
-              {{ 'REGISTER.ERR.PASSMAX' | translate}}
-       </div>
-  </div>
-
-  <div class="form-group">
-      <input 
-        type="password" 
-        class="form-control" 
-        formControlName="confirmPassword" 
-        placeholder="{{ 'REGISTER.FORM.CONFIRMPASS' | translate}}">
-        <div class="alert alert-danger"
-            *ngIf="registerForm.controls['confirmPassword'].invalid && registerForm.controls['confirmPassword'].touched">
-            Введите повторно пароль правильно 
-       </div>
-    </div>
-
-  <div class="form-group text-center">
-    <button class="btn btn-success" [disabled]="!registerForm.valid" 
-    type="submit">{{ 'REGISTER.REGISTER' | translate}}</button>
-    <button class="btn btn-default" type="button" (click)="cancel()">{{ 'REGISTER.CANCEL' | translate}}</button>
+      formControlName="role"
+      id="roleSelect">
+        <option value="Admin">
+          {{
+            'REGISTER.FORM.ADMIN' | translate
+          }}
+        </option>
+        <option value="Medic" selected>
+          {{
+            'REGISTER.FORM.MEDIC' | translate
+          }}
+        </option>
+      </select> 
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['role'].invalid
+      "
+    >
+      Введите свою роль  
+    </div> 
   </div>
   
+  
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="{{ 'REGISTER.FORM.EMAIL' | translate }}"
+      formControlName="email"
+    />
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['email'].invalid &&
+        registerForm.controls['email'].touched
+      "
+    >
+               {{ "REGISTER.ERR.EMAIL" | translate }}  
+    </div>
+  </div>
+
+  <div class="form-group">
+    <input
+      type="password"
+      class="form-control"
+      formControlName="password"
+      placeholder="{{ 'REGISTER.FORM.PASS' | translate }}"
+    />
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['password'].invalid &&
+        registerForm.controls['password'].touched
+      "
+    >
+      {{ "REGISTER.ERR.PASS" | translate }}
+       
+    </div>
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['password'].hasError('minlength') &&
+        registerForm.controls['password'].touched
+      "
+    >
+      {{ "REGISTER.ERR.PASSMIN" | translate }}
+       
+    </div>
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['password'].hasError('maxlength') &&
+        registerForm.controls['password'].touched
+      "
+    >
+      {{ "REGISTER.ERR.PASSMAX" | translate }}
+       
+    </div>
+  </div>
+
+  <div class="form-group">
+    <input
+      type="password"
+      class="form-control"
+      formControlName="confirmPassword"
+      placeholder="{{ 'REGISTER.FORM.CONFIRMPASS' | translate }}"
+    />
+    <div
+      class="alert alert-danger"
+      *ngIf="
+        registerForm.controls['confirmPassword'].invalid &&
+        registerForm.controls['confirmPassword'].touched
+      "
+    >
+      Введите повторно пароль правильно  
+    </div>
+  </div>
+
+  
+
+  <div class="form-group text-center">
+    <button
+      class="btn btn-success"
+      [disabled]="!registerForm.valid"
+      type="submit"
+    >
+      {{ "REGISTER.REGISTER" | translate }}
+    </button>
+    <button class="btn btn-default" type="button" (click)="cancel()">
+      {{ "REGISTER.CANCEL" | translate }}
+    </button>
+  </div>
 </form>

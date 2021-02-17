@@ -54,9 +54,6 @@ namespace RxApp
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddDbContextPool<RxAppContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddDbContext<RxAppContext>(options =>
             {
                 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

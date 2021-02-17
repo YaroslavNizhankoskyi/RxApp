@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RxApp.Data;
 
 namespace RxApp
 {
@@ -17,9 +19,15 @@ namespace RxApp
         {
             var host = CreateHostBuilder(args).Build();
 
-            using (var scope = host.Services.CreateScope())
+            var scope = host.Services.CreateScope();
+
+            var services = scope.ServiceProvider;
+
+            try
             {
-                var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var context = services.GetRequiredService<RxAppContext>();
+                await context.Database.MigrateAsync();
 
                 if (!await roleManager.RoleExistsAsync("Admin"))
                     await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
@@ -29,9 +37,14 @@ namespace RxApp
                     await roleManager.CreateAsync(new IdentityRole { Name = "Pharmacist" });
                 if (!await roleManager.RoleExistsAsync("Medic"))
                     await roleManager.CreateAsync(new IdentityRole { Name = "Medic" });
-                
 
             }
+            catch (Exception ex) 
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "Ann error occured during igrations");
+            }
+
 
             await host.RunAsync();
         }
@@ -42,6 +55,6 @@ namespace RxApp
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-   
+
     }
 }

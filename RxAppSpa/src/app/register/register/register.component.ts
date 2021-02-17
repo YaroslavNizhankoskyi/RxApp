@@ -22,6 +22,7 @@ export class RegisterComponent implements OnInit {
     secondname: "secondname",
     age: 18,
     password: "Passw0rd",
+    role: "Medic"
   };
 
   registerForm = this.fb.group({
@@ -51,7 +52,10 @@ export class RegisterComponent implements OnInit {
       confirmPassword: ['',[
         Validators.required,
       ]
-      ]
+      ],
+      role: ['', [
+        Validators.required
+      ]]
     },
     {
       validator: this.customValidator.passwordMatchValidator('password', 'confirmPassword')
