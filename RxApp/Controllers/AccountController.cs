@@ -107,8 +107,7 @@ namespace RxApp.Controllers
                 };
 
                 var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_config.
-                            GetSection("AppSettings:Token").Value));
+                    Encoding.UTF8.GetBytes(_config["TokenKey"]));
 
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
