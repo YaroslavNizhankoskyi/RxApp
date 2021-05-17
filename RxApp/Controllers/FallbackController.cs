@@ -18,5 +18,11 @@ namespace RxApp.Controllers
                     "index.html"),
                 "text/HTML");
         }
+
+        [HttpGet]
+        public ActionResult<string> GetHello()
+        {
+            return "Hello from backend";
+        }
     }
 }

@@ -8,6 +8,7 @@ import { ReplaySubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
   baseUrl = environment.apiUrl;
 

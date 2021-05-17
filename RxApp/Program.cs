@@ -27,6 +27,7 @@ namespace RxApp
             {
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var context = services.GetRequiredService<RxAppContext>();
+
                 await context.Database.MigrateAsync();
 
                 if (!await roleManager.RoleExistsAsync("Admin"))

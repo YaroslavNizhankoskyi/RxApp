@@ -47,6 +47,12 @@ namespace RxApp.Controllers
         }
 
 
+        [HttpGet("Hello")]
+        public ActionResult<string> GetHello()
+        {
+            return "Hello from backend";
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto model)
         {
